@@ -13,14 +13,13 @@ As formigas argentinas, ao se deslocarem do ninho para a fonte de alimento e vic
 
 O primeiro passo para a aplicação da ACO a um problema de otimização combinatória (POC) consiste em definir um modelo do POC como uma tripla (S, Ω, f), onde:
 
-* S é um espaço de busca definido sobre um conjunto finito de variáveis de decisão discretas;
-* Ω é um conjunto de restrições entre as variáveis; e
-* f: S → R+0 é uma função objetivo a ser minimizada (como maximizar sobre f é o mesmo que minimizar sobre -f, todo POC pode ser descrito como um problema de minimização).
+*   **S** é um espaço de busca definido sobre um conjunto finito de variáveis de decisão discretas;
+*   **Ω** é um conjunto de restrições entre as variáveis; e
+*   **f: S → R+0** é uma função objetivo a ser minimizada (como maximizar sobre _f_ é o mesmo que minimizar sobre -_f_, todo POC pode ser descrito como um problema de minimização).
 
-O espaço de busca S é definido da seguinte forma. É dado um conjunto de variáveis discretas X_{i}, i = 1, ..., n, com valores v_{ji} ∈ D{i} = {v_{1i}, ..., v_{|Di|i}}. Os elementos de S são atribuições completas, ou seja, atribuições em que cada variável X_{i} tem um valor v_{ji} atribuído de seu domínio D_{i}. O conjunto de soluções viáveis SΩ é dado pelos elementos de S que satisfazem todas as restrições no conjunto Ω.
+O espaço de busca S é definido da seguinte forma. É dado um conjunto de variáveis discretas X<sub>i</sub>, i = 1, ..., n, com valores v<sub>ji</sub> ∈ D<sub>i</sub> = {v<sub>1i</sub>, ..., v<sub>|Di|i</sub>}. Os elementos de S são atribuições completas, ou seja, atribuições em que cada variável X<sub>i</sub> tem um valor v<sub>ji</sub> atribuído de seu domínio D<sub>i</sub>. O conjunto de soluções viáveis S<sub>Ω</sub> é dado pelos elementos de S que satisfazem todas as restrições no conjunto Ω.
 
-Uma solução s* ∈ S_{Ω} é chamada de ótimo global se e somente se f(s*) ≤ f(s) para todo s ∈ SΩ. O conjunto de todas as soluções globalmente ótimas é denotado por S^{*}_{Ω} ⊆ S_{Ω}. Resolver um POC requer encontrar pelo menos um s* ∈ S*_{Ω}.
-
+Uma solução s* ∈ S<sub>Ω</sub> é chamada de ótimo global se e somente se f(s*) ≤ f(s) para todo s ∈ S<sub>Ω</sub>. O conjunto de todas as soluções globalmente ótimas é denotado por S<sup>*</sup><sub>Ω</sub> ⊆ S<sub>Ω</sub>. Resolver um POC requer encontrar pelo menos um s* ∈ S<sup>*</sup><sub>Ω</sub>.
 
 ### Otimização
 
