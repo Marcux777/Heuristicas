@@ -25,4 +25,7 @@ As formigas argentinas, ao se deslocarem do ninho para a fonte de alimento e vic
 - https://ieeexplore.ieee.org/document/1027743
 
 - https://www.researchgate.net/publication/221907664_Ant_Colony_Optimization
-- 
+
+- https://ieeexplore.ieee.org/document/4129846
+
+- https://www.sciencedirect.com/science/article/pii/S095219761200067X?via%3Dihub
