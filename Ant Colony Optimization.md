@@ -15,7 +15,17 @@ O primeiro passo para a aplicação de ACO (Otimização por Colônia de Formiga
 
 * S é o espaço de busca definido sobre um conjunto finito de variáveis de decisão discretas;
 * Ω é um conjunto de restrições entre as variáveis; e
-* f: S → ℝ⁺₀ é uma função objetivo a ser minimizada (como maximizar em f é o mesmo que minimizar em -f, todo COP pode ser descrito como um problema de minimização).
+* <math xmlns="http://www.w3.org/1998/Math/MathML">
+  <mi>f</mi>
+  <mo>:</mo>
+  <mi>S</mi>
+  <mo stretchy="false">&#x2192;<!-- → --></mo>
+  <msubsup>
+    <mi>R</mi>
+    <mn>0</mn>
+    <mo>+</mo>
+  </msubsup>
+</math> é uma função objetivo a ser minimizada (como maximizar em f é o mesmo que minimizar em -f, todo COP pode ser descrito como um problema de minimização).
 
 O espaço de busca S é definido da seguinte forma. É dado um conjunto de variáveis discretas <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mi>i</mi>
@@ -81,7 +91,30 @@ Uma solução <math xmlns="http://www.w3.org/1998/Math/MathML">
   </msub>
 </math> é chamada de ótimo global se e somente se:
 
-f(s^*) \le f(s) ~\forall s \in S_\Omega\.
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <mi>f</mi>
+  <mo stretchy="false">(</mo>
+  <msup>
+    <mi>s</mi>
+    <mo>&#x2217;<!-- ∗ --></mo>
+  </msup>
+  <mo stretchy="false">)</mo>
+  <mo>&#x2264;<!-- ≤ --></mo>
+  <mi>f</mi>
+  <mo stretchy="false">(</mo>
+  <mi>s</mi>
+  <mo stretchy="false">)</mo>
+  <mtext>&#xA0;</mtext>
+  <mi mathvariant="normal">&#x2200;<!-- ∀ --></mi>
+  <mi>s</mi>
+  <mo>&#x2208;<!-- ∈ --></mo>
+  <msub>
+    <mi>S</mi>
+    <mi mathvariant="normal">&#x03A9;<!-- Ω --></mi>
+  </msub>
+  <mtext>&#xA0;</mtext>
+  <mo>.</mo>
+</math>
 
 O conjunto de todas as soluções globalmente ótimas é denotado por <math xmlns="http://www.w3.org/1998/Math/MathML">
   <msubsup>
