@@ -11,15 +11,106 @@ As formigas argentinas, ao se deslocarem do ninho para a fonte de alimento e vic
 
 ### Definição Formal
 
-O primeiro passo para a aplicação da ACO a um problema de otimização combinatória (POC) consiste em definir um modelo do POC como uma tripla (S, Ω, f), onde:
+O primeiro passo para a aplicação de ACO (Otimização por Colônia de Formigas) a um problema de otimização combinatória (COP) consiste em definir um modelo do COP como um trio (S, Ω, f), onde:
 
-*   **S** é um espaço de busca definido sobre um conjunto finito de variáveis de decisão discretas;
-*   **Ω** é um conjunto de restrições entre as variáveis; e
-*   **f: S → R+0** é uma função objetivo a ser minimizada (como maximizar sobre _f_ é o mesmo que minimizar sobre -_f_, todo POC pode ser descrito como um problema de minimização).
+* S é o espaço de busca definido sobre um conjunto finito de variáveis de decisão discretas;
+* Ω é um conjunto de restrições entre as variáveis; e
+* f: S → ℝ⁺₀ é uma função objetivo a ser minimizada (como maximizar em f é o mesmo que minimizar em -f, todo COP pode ser descrito como um problema de minimização).
 
-O espaço de busca S é definido da seguinte forma. É dado um conjunto de variáveis discretas X<sub>i</sub>, i = 1, ..., n, com valores v<sub>ji</sub> ∈ D<sub>i</sub> = {v<sub>1i</sub>, ..., v<sub>|Di|i</sub>}. Os elementos de S são atribuições completas, ou seja, atribuições em que cada variável X<sub>i</sub> tem um valor v<sub>ji</sub> atribuído de seu domínio D<sub>i</sub>. O conjunto de soluções viáveis S<sub>Ω</sub> é dado pelos elementos de S que satisfazem todas as restrições no conjunto Ω.
+O espaço de busca S é definido da seguinte forma. É dado um conjunto de variáveis discretas <math xmlns="http://www.w3.org/1998/Math/MathML">
+  <mi>i</mi>
+  <mo>=</mo>
+  <mn>1</mn>
+  <mo>,</mo>
+  <mo>&#x2026;<!-- … --></mo>
+  <mo>,</mo>
+  <mi>n</mi>
+  <mtext>&#xA0;</mtext>
+  <mo>,</mo>
+</math> com valores <math xmlns="http://www.w3.org/1998/Math/MathML">
+  <msubsup>
+    <mi>v</mi>
+    <mi>i</mi>
+    <mi>j</mi>
+  </msubsup>
+  <mo>&#x2208;<!-- ∈ --></mo>
+  <msub>
+    <mi>D</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>=</mo>
+  <mo fence="false" stretchy="false">{</mo>
+  <msubsup>
+    <mi>v</mi>
+    <mi>i</mi>
+    <mn>1</mn>
+  </msubsup>
+  <mo>,</mo>
+  <mo>&#x2026;<!-- … --></mo>
+  <mo>,</mo>
+  <msubsup>
+    <mi>v</mi>
+    <mi>i</mi>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mrow class="MJX-TeXAtom-ORD">
+        <mo stretchy="false">|</mo>
+      </mrow>
+      <msub>
+        <mi>D</mi>
+        <mi>i</mi>
+      </msub>
+      <mrow class="MJX-TeXAtom-ORD">
+        <mo stretchy="false">|</mo>
+      </mrow>
+    </mrow>
+  </msubsup>
+  <mo fence="false" stretchy="false">}</mo>
+  <mtext>&#xA0;</mtext>
+  <mo>,</mo>
+</math>. Os elementos de S são atribuições completas, ou seja, atribuições em que cada variável Xi tem um valor vⱼⁱ atribuído de seu domínio Dᵢ. O conjunto de soluções viáveis SΩ é dado pelos elementos de S que satisfazem todas as restrições no conjunto Ω.
 
-Uma solução s* ∈ S<sub>Ω</sub> é chamada de ótimo global se e somente se f(s*) ≤ f(s) para todo s ∈ S<sub>Ω</sub>. O conjunto de todas as soluções globalmente ótimas é denotado por S<sup>*</sup><sub>Ω</sub> ⊆ S<sub>Ω</sub>. Resolver um POC requer encontrar pelo menos um s* ∈ S<sup>*</sup><sub>Ω</sub>.
+Uma solução <math xmlns="http://www.w3.org/1998/Math/MathML">
+  <msup>
+    <mi>s</mi>
+    <mo>&#x2217;<!-- ∗ --></mo>
+  </msup>
+  <mo>&#x2208;<!-- ∈ --></mo>
+  <msub>
+    <mi>S</mi>
+    <mi mathvariant="normal">&#x03A9;<!-- Ω --></mi>
+  </msub>
+</math> é chamada de ótimo global se e somente se:
+
+f(s^*) \le f(s) ~\forall s \in S_\Omega\.
+
+O conjunto de todas as soluções globalmente ótimas é denotado por <math xmlns="http://www.w3.org/1998/Math/MathML">
+  <msubsup>
+    <mi>S</mi>
+    <mi mathvariant="normal">&#x03A9;<!-- Ω --></mi>
+    <mo>&#x2217;<!-- ∗ --></mo>
+  </msubsup>
+  <mo>&#x2286;<!-- ⊆ --></mo>
+  <msub>
+    <mi>S</mi>
+    <mi mathvariant="normal">&#x03A9;<!-- Ω --></mi>
+  </msub>
+  <mtext>&#xA0;</mtext>
+  <mo>.</mo>
+</math>. Resolver um COP requer encontrar pelo menos um <math xmlns="http://www.w3.org/1998/Math/MathML">
+  <msup>
+    <mi>s</mi>
+    <mo>&#x2217;<!-- ∗ --></mo>
+  </msup>
+  <mo>&#x2208;<!-- ∈ --></mo>
+  <msubsup>
+    <mi>S</mi>
+    <mi mathvariant="normal">&#x03A9;<!-- Ω --></mi>
+    <mo>&#x2217;<!-- ∗ --></mo>
+  </msubsup>
+  <mtext>&#xA0;</mtext>
+  <mo>.</mo>
+</math>.
+
 
 ### Otimização
 
