@@ -11,20 +11,20 @@ As formigas argentinas, ao se deslocarem do ninho para a fonte de alimento e vic
 
 ### Definição Formal
 
-<p>O primeiro passo para a aplicação do ACO a um problema de otimização combinatória (COP) consiste em definir um modelo do COP como uma trinca (S,Ω,f), onde:</p>
+O primeiro passo para a aplicação do ACO a um problema de otimização combinatória (COP) consiste em definir um modelo do COP como uma trinca $(S,Ω,f)$, onde:
 
-<ul>
-  <li><i>S</i> é um espaço de busca definido sobre um conjunto finito de variáveis de decisão discretas;</li>
-  <li><i>Ω</i> é um conjunto de restrições entre as variáveis; e</li>
-  <li><i>f:S→R+0</i> é uma função objetivo a ser minimizada (como maximizar sobre <i>f</i> é o mesmo que minimizar sobre <i>-f</i>, todo COP pode ser descrito como um problema de minimização).</li>
-</ul>
+- $S$ é um espaço de busca definido sobre um conjunto finito de variáveis de decisão discretas;
 
-<p>O espaço de busca <i>S</i> é definido da seguinte forma. Um conjunto de variáveis discretas <i>X<sub>i</sub></i>, <i>i=1,…,n</i>, com valores <i>v<sup>j</sup><sub>i</sub> ∈ D<sub>i</sub>={v<sup>1</sup><sub>i</sub>,…,v<sup>|D<sub>i</sub>|</sup><sub>i</sub>}</i>, é dado. Elementos de <i>S</i> são atribuições completas, ou seja, atribuições nas quais cada variável <i>X<sub>i</sub></i> tem um valor <b><i>v<sup>j</sup><sub>i</sub></i></b> atribuído de seu domínio <i>D<sub>i</sub></i>. O conjunto de soluções viáveis <i>S<sub>Ω</sub></i> é dado pelos elementos de <i>S</i> que satisfazem todas as restrições no conjunto <i>Ω</i>.</p>
+- $Ω$ é um conjunto de restrições entre as variáveis; e
 
-<p>Uma solução <i>s<sup>∗</sup>∈ S<sub>Ω</sub></i> é chamada de ótimo global se e somente se
-<i>f(s<sup>∗</sup>)≤f(s) ∀s∈S<sub>Ω</sub></i>
-O conjunto de todas as soluções globalmente ótimas é denotado por <i>S<sup>*</sup><sub>Ω</sub>⊆S<sub>Ω</sub></i>. Resolver um COP requer encontrar pelo menos um <i>s<sup>∗</sup>∈S<sup>*</sup><sub>Ω</sub></i>.</p>
+- $f:S→R+0$ é uma função objetivo a ser minimizada (como maximizar sobre $f$ é o mesmo que minimizar sobre $-f$, todo COP pode ser descrito como um problema de minimização).
+  
 
+O espaço de busca $S$ é definido da seguinte forma. Um conjunto de variáveis discretas $X_i$, $i=1,…,n$, com valores $v^j_i ∈ Di={v^1_i,…,v^{|Di|}_i}$, é dado. Elementos de S são atribuições completas, ou seja, atribuições nas quais cada variável $X_i$ tem um valor $v^{j}_{i}$ atribuído de seu domínio $D_i$. O conjunto de soluções viáveis $S_Ω$ é dado pelos elementos de $S$ que satisfazem todas as restrições no conjunto $Ω$.
+
+Uma solução $s^{∗}∈ S_{Ω}$ é chamada de ótimo global se e somente se
+$$f(s^{∗})≤f(s) ∀s∈S_{Ω}$$
+O conjunto de todas as soluções globalmente ótimas é denotado por $S^{*}_Ω⊆S_Ω$. Resolver um COP requer encontrar pelo menos um $s^{∗}∈S^∗_Ω$.
 
 
 ### Otimização
