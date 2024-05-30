@@ -13,7 +13,7 @@ def calcular_preco(n, x, y):
                 preco[i][j] = float(math.sqrt((x[j] - x[i])**2 + (y[j] - y[i])**2))
     return preco
 
-pasta = "C:\\GitHub\\Heuristicas\\Travelling Salesman Problem\\Entradas\\"
+pasta = "/home/marcux777/Heuristicas/TSP/Entradas/"
 
 
 lista_arquivos = [
@@ -35,7 +35,7 @@ lista_arquivos = [
 '''
 
 inicio = time.time()
-n, x, y = GA.ler_arquivo(pasta+lista_arquivos[9])
+n, x, y = GA.ler_arquivo(pasta+lista_arquivos[0])
 preco = calcular_preco(n, x, y)
 populacao = [GA(GA.criar_caminho(n), preco) for _ in range(100)]
 resultados, geracao = GA.evoluir(populacao)
