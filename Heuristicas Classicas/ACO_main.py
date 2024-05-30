@@ -44,7 +44,7 @@ lista_arquivos = [
 n, x, y = read_archive(pasta + lista_arquivos[0])
 graph = calculate_Weights(n, x, y)
 
-aco = ACO(graph, num_ants=10, alpha=1, beta=2, rho=0.5)
+aco = ACO(graph, num_ants=50, alpha=1, beta=1, rho=0.7)
 
 start_city = 0
 max_iterations = 100

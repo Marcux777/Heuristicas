@@ -1,4 +1,4 @@
-from Class_GA import GA
+from Genetic_Algorithm import GA
 import random
 import matplotlib.pyplot as plt
 
@@ -13,11 +13,9 @@ preco = [[0, 10, 15, 20, 25],
          [25, 20, 15, 10, 0]]
 
 # Criando a população inicial
-populacao = [GA(GA.gerar_gene_aleatorio(n), preco) for _ in range(10)]
+populacao = [GA(GA.generate_random_gene(n), preco) for _ in range(10)]
 
 # Evoluindo a população
-resultados, geracao = GA.evoluir(populacao)
+resultados, geracao = GA.evolve(populacao)
 
 print("Geracao: ", geracao, " Melhor caminho:", resultados[0].gene, "\n Custo: ", round(resultados[0].fit), "\n")
-
-resultados[0].plotar_grafico()

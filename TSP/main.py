@@ -35,12 +35,11 @@ lista_arquivos = [
 '''
 
 inicio = time.time()
-n, x, y = GA.ler_arquivo(pasta+lista_arquivos[0])
+n, x, y = GA.read_file(pasta+lista_arquivos[1])
 preco = calcular_preco(n, x, y)
-populacao = [GA(GA.criar_caminho(n), preco) for _ in range(100)]
-resultados, geracao = GA.evoluir(populacao)
+populacao = [GA(GA.create_path(n), preco) for _ in range(100)]
+resultados, geracao = GA.evolve(populacao)
 print("Geracao: ", geracao, " Melhor caminho:", resultados[0].gene, "\n Custo: ", round(resultados[0].fit), "\n")
 fim = time.time()
-#GA.plot_convergencia()
 
 print("O tempo de execução foi: ", fim - inicio, " segundos\n")

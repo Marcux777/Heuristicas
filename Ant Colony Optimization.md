@@ -79,6 +79,6 @@ O conjunto de todas as soluções globalmente ótimas é denotado por $S^{*}_Ω�
 
 - Xu, Ben-Lian & Zhu, Jihong & Chen, Qinlan. (2010). Ant Colony Optimization. 10.5772/9389. (https://www.researchgate.net/publication/221907664_Ant_Colony_Optimization)
 
-- (https://ieeexplore.ieee.org/document/4129846)
+- M. Dorigo, M. Birattari and T. Stutzle, "Ant colony optimization," in IEEE Computational Intelligence Magazine, vol. 1, no. 4, pp. 28-39, Nov. 2006, doi: 10.1109/MCI.2006.329691. (https://ieeexplore.ieee.org/document/4129846)
 
 - (https://www.sciencedirect.com/science/article/pii/S095219761200067X?via%3Dihub)

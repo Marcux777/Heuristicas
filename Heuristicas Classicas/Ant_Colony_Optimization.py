@@ -2,6 +2,7 @@
 
 import numpy as np
 import math
+from sklearn.model_selection import ParameterGrid
 
 class ACO:
     """
@@ -37,6 +38,8 @@ class ACO:
         self.beta = beta
         self.rho = rho
         self.pheromones = [[1 for _ in range(len(graph))] for _ in range(len(graph))]
+        self.best_solution = None
+        
 
     def construct_solution(self, start_city):
         """
@@ -55,11 +58,28 @@ class ACO:
 
         while len(solution) < len(self.graph):
             next_city = self.select_next_city(current_city, visited_cities)
+            # next_city = self.select_next_neighbor(current_city, visited_cities)
             solution.append(next_city)
             visited_cities.append(next_city)
             current_city = next_city
 
         return solution
+    
+    def select_next_neighbor(self, current_city, visited_cities):
+        """
+        Seleciona a próxima cidade a ser visitada com base na heurística do vizinho mais próximo.
+
+        Args:
+            current_city (int): Índice da cidade atual.
+            visited_cities (list): Lista de cidades já visitadas.
+
+        Returns:
+            int: Índice da próxima cidade a ser visitada.
+        """
+
+        unvisited_cities = set(range(len(self.graph))) - set(visited_cities)
+        next_city = min(unvisited_cities, key=lambda city: self.graph[current_city][city])
+        return next_city
 
     def select_next_city(self, current_city, visited_cities):
         """
@@ -81,13 +101,10 @@ class ACO:
             probability = pheromone ** self.alpha * (1 / distance) ** self.beta
             probabilities.append(probability)
 
-        # Verifique se há alguma probabilidade
         if len(probabilities) > 0:
-            # Normalize as probabilidades se necessário
             probabilities = np.array(probabilities) / np.sum(probabilities)
             return np.random.choice(unvisited_cities, p=probabilities)
         else:
-            # Se todas as cidades foram visitadas, retorne a cidade inicial
             return current_city
 
     def update_pheromones(self, solutions):
@@ -98,16 +115,15 @@ class ACO:
             solutions (list): Lista de soluções (caminhos) encontradas.
         """
 
-        for solution, cost in solutions:
-            for i in range(len(solution) - 1):
-                # Converta os valores de solution[i] e solution[i + 1] para inteiros
-                city1 = int(solution[i])
-                city2 = int(solution[i + 1])
-                self.pheromones[city1][city2] += 1 / self.graph[city1][city2]
-
         for i in range(len(self.graph)):
             for j in range(len(self.graph)):
                 self.pheromones[i][j] *= self.rho
+
+        if self.best_solution is not None:
+            for i in range(len(self.best_solution) - 1):
+                city1 = int(self.best_solution[i])
+                city2 = int(self.best_solution[i + 1])
+                self.pheromones[city1][city2] += (1 / self.graph[city1][city2])
 
     def solve(self, start_city, max_iterations):
         """
@@ -121,7 +137,7 @@ class ACO:
             tuple: Tupla contendo a melhor solução e seu custo.
         """
 
-        best_solution = None
+        self.best_solution = None
         best_cost = float('inf')
 
         for _ in range(max_iterations):
@@ -131,11 +147,14 @@ class ACO:
                 cost = self.calculate_cost(solution)
                 solutions.append((solution, cost))
 
+            current_best_solution, current_best_cost = min(solutions, key=lambda x: x[1])
+            if self.best_solution is None or current_best_cost < best_cost:
+                self.best_solution = current_best_solution
+                best_cost = current_best_cost
+
             self.update_pheromones(solutions)
 
-            best_solution, best_cost = min(solutions, key=lambda x: x[1])
-
-        return best_solution, best_cost
+        return self.best_solution, best_cost
 
     def calculate_cost(self, solution):
         """
@@ -152,3 +171,35 @@ class ACO:
         for i in range(len(solution) - 1):
             cost += self.graph[solution[i]][solution[i + 1]]
         return cost
+
+    @staticmethod
+    def find_hyperparamenters(graph, start_city, max_iterations):
+        # Defina os valores dos hiperparâmetros que você deseja testar
+        param_grid = {
+            'num_ants': [50, 100],
+            'alpha': [0.1, 0.5],
+            'beta': [0.1, 0.5],
+            'rho': [0.3, 0.5]
+        }
+
+        # Crie uma grade de hiperparâmetros
+        grid = ParameterGrid(param_grid)
+
+        best_cost = float('inf')
+        best_params = None
+
+        # Para cada combinação de hiperparâmetros
+        for params in grid:
+            # Crie uma instância do ACO com os hiperparâmetros atuais
+            aco = ACO(graph, **params)
+            print(params)
+            # Resolva o problema e obtenha o custo da melhor solução
+            _, cost = aco.solve(start_city, max_iterations)
+
+            # Se o custo da melhor solução for menor que o melhor custo encontrado até agora
+            if cost < best_cost:
+                # Atualize o melhor custo e os melhores hiperparâmetros
+                best_cost = cost
+                best_params = params
+
+        return best_params

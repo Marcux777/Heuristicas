@@ -1,6 +1,10 @@
 # Heuristicas
  Codigo de Heuristicas e implementação de problemas clássicos com elas
 
+## Dados - UWaterLoo
+
+https://www.math.uwaterloo.ca/tsp/data/index.html
+
 ## Intrudução
 
 ### Heuristica
