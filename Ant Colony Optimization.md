@@ -69,6 +69,37 @@ O conjunto de todas as soluções globalmente ótimas é denotado por $S^{*}_Ω�
 
 [Ant Colony Optimization](/Heuristicas%20Classicas/Ant_Colony_Optimization.py)
 
+## BanchMark
+**Obs: Notação Americana**
+| Cidade | Instâncias | Custo Ótimo | Tempo Convergência | Custo Encontrado | 
+|---|---|---|---|---|
+| Argentina | 9,152 cidades | 837,479 | | |
+| Burma |  33,708 cidades | 959,304 | | |
+| China | 71,009 cidades | 4,566,563 | | |
+| Djibouti | 38 cidades | 6,656 | 3.54 segundos | 7148.31 |
+| Egypt | 7,146 cidades | 172,387 |
+| Finland | 10639 cidades | 520,527 | | |
+| Greece | 9882 cidades | 300,899 | | |
+| Honduras | 14473 cidades | 177,105 | | |
+| Ireland | 
+| Japan |
+| Kazakhstan |
+| Luxenburgo| 980 cidades | 11,340 | 2298.47 segundos | 12083.53 |
+| Morocco |
+| Nicaragua |
+| Oman |
+| Panama |
+| Qatar | 194 cidades |  9,352 | 91.29 segundos | 9480.83 |
+| Rwanda | 1,621 cidades | 26,051 |
+| Sweden | 24,978 cidades | 855,597 | 
+| Tanzania | 6,117 cidades | 394,718 |
+| Uruguay | 734 cidades | 79114 | 
+| Vietnam | 22,775 Cidades | 569,288
+| Western Sahara | 29 cidades | 27603 | 3.72 segundos | 25706.57 |
+| Yemen | 7,663 Cidades | 238,314 |
+| Zimbabwe | 929 cidades | 95,345
+
+
 ## Referências
 
 - Dorigo, Marco & Di Caro, Gianni. (1999). The Ant Colony Optimization Meta-Heuristic. New Ideas in Optimization. (https://www.researchgate.net/publication/2831286_The_Ant_Colony_Optimization_Meta-Heuristic)
