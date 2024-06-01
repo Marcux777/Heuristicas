@@ -89,15 +89,15 @@ O conjunto de todas as soluções globalmente ótimas é denotado por $S^{*}_Ω�
 | Nicaragua |
 | Oman |
 | Panama |
-| Qatar | 194 cidades |  9,352 | 91.29 segundos | 9480.83 |
-| Rwanda | 1,621 cidades | 26,051 |
+| Qatar | 194 cidades |  9352 | 91.29 segundos | 9480.83 |
+| Rwanda | 1621 cidades | 26051 | 7110.96 segundos | 27456.62 |
 | Sweden | 24,978 cidades | 855,597 | 
 | Tanzania | 6,117 cidades | 394,718 |
-| Uruguay | 734 cidades | 79114 | 
-| Vietnam | 22,775 Cidades | 569,288
+| Uruguay | 734 cidades | 79114 | 1278.15 segundos | 85550.71 |
+| Vietnam | 22,775 cidades | 569,288
 | Western Sahara | 29 cidades | 27603 | 3.72 segundos | 25706.57 |
-| Yemen | 7,663 Cidades | 238,314 |
-| Zimbabwe | 929 cidades | 95,345
+| Yemen | 7,663 cidades | 238,314 |
+| Zimbabwe | 929 cidades | 95345 | 2057.08 segundos |100790.92
 
 
 ## Referências

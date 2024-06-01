@@ -22,7 +22,7 @@ def read_archive(caminho_arquivo):
             x[l], y[l] = c1, c2
     return n, x, y
 
-pasta = "/home/marcux777/Heuristicas/TSP/Entradas/"
+pasta = "/Entradas/"
 
 
 lista_arquivos = [
@@ -53,7 +53,7 @@ lista_arquivos = [
 17 - Rwanda.txt
 '''
 
-n, x, y = read_archive(pasta + lista_arquivos[11])
+n, x, y = read_archive(pasta + lista_arquivos[17])
 graph = calculate_Weights(n, x, y)
 
 #print(ACO.find_hyperparameters(graph, 0, 100, 10)) -> returned num_ants = 50, alpha=0.8, beta=0.8, rho=0.8
