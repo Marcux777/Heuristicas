@@ -73,30 +73,30 @@ O conjunto de todas as soluções globalmente ótimas é denotado por $S^{*}_Ω�
 **Obs: Notação Americana**
 | Cidade | Instâncias | Custo Ótimo | Tempo Convergência | Custo Encontrado | 
 |---|---|---|---|---|
-| Argentina | 9,152 cidades | 837,479 | | |
-| Burma |  33,708 cidades | 959,304 | | |
-| China | 71,009 cidades | 4,566,563 | | |
-| Djibouti | 38 cidades | 6,656 | 3.54 segundos | 7148.31 |
-| Egypt | 7,146 cidades | 172,387 |
-| Finland | 10639 cidades | 520,527 | | |
-| Greece | 9882 cidades | 300,899 | | |
-| Honduras | 14473 cidades | 177,105 | | |
+| Argentina | 9152 cidades | 837479 | | |
+| Burma |  33708 cidades | 959304 | | |
+| China | 71009 cidades | 4566563 | | |
+| Djibouti | 38 cidades | 6656 | 3.54 segundos | 7148.31 |
+| Egypt | 7146 cidades | 172387 |
+| Finland | 10639 cidades | 520527 | | |
+| Greece | 9882 cidades | 300899 | | |
+| Honduras | 14473 cidades | 177105 | | |
 | Ireland | 
 | Japan |
 | Kazakhstan |
-| Luxenburgo| 980 cidades | 11,340 | 2298.47 segundos | 12083.53 |
+| Luxenburgo| 980 cidades | 11340 | 2298.47 segundos | 12083.53 |
 | Morocco |
 | Nicaragua |
 | Oman |
 | Panama |
 | Qatar | 194 cidades |  9352 | 91.29 segundos | 9480.83 |
 | Rwanda | 1621 cidades | 26051 | 7110.96 segundos | 27456.62 |
-| Sweden | 24,978 cidades | 855,597 | 
-| Tanzania | 6,117 cidades | 394,718 |
+| Sweden | 24978 cidades | 855597 | 
+| Tanzania | 6117 cidades | 394718 |
 | Uruguay | 734 cidades | 79114 | 1278.15 segundos | 85550.71 |
-| Vietnam | 22,775 cidades | 569,288
+| Vietnam | 22775 cidades | 569288
 | Western Sahara | 29 cidades | 27603 | 3.72 segundos | 25706.57 |
-| Yemen | 7,663 cidades | 238,314 |
+| Yemen | 7663 cidades | 238314 |
 | Zimbabwe | 929 cidades | 95345 | 2057.08 segundos |100790.92
 
 

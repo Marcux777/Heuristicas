@@ -13,16 +13,18 @@ def calculate_Weights(n, x, y):
     return preco
 
 def read_archive(caminho_arquivo):
+    x, y = [], []
     with open(caminho_arquivo, 'r') as arquivo:
-        n = int(arquivo.readline().strip())
-        x, y = [float('inf')]*n, [float('inf')]*n
+        n = int(next(arquivo).strip())
+        x = [float('inf')] * n
+        y = [float('inf')] * n
         for linha in arquivo:
             l, c1, c2 = map(float, linha.split())
             l = int(l) - 1
             x[l], y[l] = c1, c2
     return n, x, y
 
-pasta = "/Entradas/"
+pasta = "/home/marcux777/Heuristicas/Entradas/"
 
 
 lista_arquivos = [
@@ -53,12 +55,12 @@ lista_arquivos = [
 17 - Rwanda.txt
 '''
 
-n, x, y = read_archive(pasta + lista_arquivos[17])
+n, x, y = read_archive(pasta + lista_arquivos[15])
 graph = calculate_Weights(n, x, y)
 
 #print(ACO.find_hyperparameters(graph, 0, 100, 10)) -> returned num_ants = 50, alpha=0.8, beta=0.8, rho=0.8
 
-aco = ACO(graph, num_ants=150, alpha=1, beta=1, rho=0.9)
+aco = ACO(graph, num_ants=50, alpha=0.8, beta=0.8, rho=0.9)
 start_time = time.time()
 best_solution, best_cost = aco.solve(0, 100)
 end_time = time.time()
