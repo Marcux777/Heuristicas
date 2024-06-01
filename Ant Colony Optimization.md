@@ -5,6 +5,8 @@
 
 ### Inspiração e Princípios Básicos
 
+O primeiro algoritmo ACO, o Ant System (AS), foi proposto em 1991 para resolver o problema do caixeiro viajante (TSP). Embora não fosse competitivo com os algoritmos TSP de última geração, o AS estimulou pesquisas adicionais sobre variantes algorítmicas e aplicações.
+
 A Otimização por Colônia de Formigas (ACO) é um algoritmo metaheurístico inspirado no comportamento forrageiro de formigas reais. As formigas depositam rastros de feromônios enquanto se movem, guiando outras formigas para caminhos mais eficientes. A ACO imita esse comportamento usando uma população de "formigas artificiais" que constroem soluções para um problema de otimização. Cada formiga segue probabilisticamente um caminho baseado nos rastros de feromônios e em informações heurísticas.
 
 ### BioInspiração
@@ -64,6 +66,87 @@ Uma solução $s^{∗}∈ S_{Ω}$ é chamada de ótimo global se e somente se
 $$f(s^{∗})≤f(s) ∀s∈S_{Ω}$$
 O conjunto de todas as soluções globalmente ótimas é denotado por $S^{*}_Ω⊆S_Ω$. Resolver um COP requer encontrar pelo menos um $s^{∗}∈S^∗_Ω$.
 
+## Algoritmo
+
+### Ant System (AS)
+
+O Ant System (AS) é o primeiro algoritmo ACO proposto na literatura.
+No AS, formigas artificiais constroem iterativamente soluções (caminhos em um grafo) e depositam feromônios nas arestas que percorreram. A quantidade de feromônio depositada é inversamente proporcional ao custo da solução (comprimento do caminho). As arestas com feromônio mais alto são mais propensas a serem escolhidas pelas formigas nas próximas iterações.
+
+O AS tem duas fases principais:
+
+1. Construção da Solução: Formigas artificiais constroem soluções incrementalmente, escolhendo a próxima cidade a visitar com base em uma regra de probabilidade que leva em conta a trilha de feromônio e informações heurísticas (como a distância entre as cidades).
+
+2. Atualização do Feromônio: Após todas as formigas terem construído suas soluções, as trilhas de feromônio são atualizadas. Primeiro, o feromônio em todas as arestas evapora a uma taxa fixa. Em seguida, as formigas depositam feromônio nas arestas que percorreram, com a quantidade de feromônio depositada sendo inversamente proporcional ao comprimento do caminho percorrido.
+
+A regra de probabilidade para a escolha da próxima cidade é:
+
+$$ p(c_i^j | s_p) = \frac{{\tau_{ij}^\alpha * [\eta(c_i^j)]^\beta}}{{\sum {\tau_{il}^\alpha * [\eta(c_i^l)]^\beta}}}, \forall c_i^j \in N(s_p) $$
+
+Onde:
+
+- $p(c_i^j | s_p)$ é a probabilidade de escolher a cidade $j$ dado o estado atual $s_p$.
+- $\tau_{ij}$ é a quantidade de feromônio na aresta entre as cidades $i$ e $j$.
+- $\eta(c_i^j)$ é a informação heurística (por exemplo, o inverso da distância) associada à escolha da cidade $j$.
+- $\alpha$ e $\beta$ são parâmetros que controlam a importância relativa do feromônio e da informação heurística.
+
+A atualização do feromônio é feita da seguinte forma:
+
+$$τ_ij = (1 - ρ) * τ_ij + ΣΔτ_ij^k$$
+
+Onde:
+
+- $\rho$ é a taxa de evaporação do feromônio.
+- $\Delta\tau_{ij}^k$ é a quantidade de feromônio depositada pela formiga $k$ na aresta $(i, j)$.
+
+### Ant Colony System (ACS)
+
+O Ant Colony System (ACS) é uma variante do algoritmo Ant System (AS) que busca melhorar o desempenho da otimização por colônia de formigas, aumentando a importância da exploração da informação coletada por formigas anteriores em relação à exploração do espaço de busca. Ele introduz duas modificações principais em relação ao AS:
+
+1.  **Regra de Escolha Pseudo-Aleatória Proporcional:** As formigas escolhem o próximo componente da solução (por exemplo, a próxima cidade a visitar no problema do caixeiro viajante) usando a regra pseudo-aleatória proporcional. Com uma probabilidade $q_0$ (onde $0 \le q_0 < 1$), elas se movem para o componente com o maior produto entre a trilha de feromônio e a informação heurística. Com probabilidade $1 - q_0$, elas realizam uma exploração tendenciosa, usando a mesma regra de decisão probabilística do AS.
+
+2.  **Atualização Local do Feromônio:** As formigas atualizam as trilhas de feromônio enquanto constroem suas soluções. Ao visitar uma aresta, elas "consomem" parte do feromônio, diminuindo a probabilidade de que outras formigas sigam o mesmo caminho. Isso favorece a exploração, equilibrando a tendência à exploração das outras modificações.
+
+Além dessas modificações, o ACS geralmente utiliza uma estratégia elitista, onde apenas a melhor formiga (a melhor da iteração ou a melhor global) deposita feromônio após cada iteração. A quantidade de feromônio depositada é proporcional à qualidade da solução encontrada.
+
+A regra de atualização global do feromônio no ACS é a seguinte:
+
+$$\tau_{ij} = (1 - \rho) * \tau_{ij} + \rho/f(s_{gb})$$
+
+Onde:
+
+*   $\tau_{ij}$ é a quantidade de feromônio na aresta $(i, j)$.
+*   $\rho$ é a taxa de evaporação do feromônio.
+*   $f(s_{gb})$ é o custo da melhor solução global encontrada até o momento.
+
+O ACS também costuma ser combinado com algoritmos de busca local para otimizar as soluções encontradas pelas formigas. Essa combinação de construção probabilística de soluções com otimização local tem se mostrado eficaz em muitas aplicações.
+
+### O MAX-MIN Ant System (MMAS)
+
+O MAX-MIN Ant System (MMAS) é uma variante do algoritmo Ant System (AS) que introduz algumas modificações importantes para melhorar o desempenho e evitar a estagnação da busca.
+
+**Principais Características:**
+
+1.  **Exploração e Intensificação:** O MMAS equilibra a exploração de novas soluções com a intensificação da busca em torno das melhores soluções encontradas. Isso é feito através de:
+    *   **Limites de Feromônio:** O MMAS impõe limites inferior e superior para os valores de feromônio em cada aresta. O limite superior evita a convergência prematura para soluções subótimas, enquanto o limite inferior garante um nível mínimo de exploração.
+    *   **Inicialização e Reinicialização do Feromônio:** As trilhas de feromônio são inicializadas com o limite superior, promovendo a exploração no início. A reinicialização ocasional das trilhas ajuda a evitar a estagnação e a explorar novas regiões do espaço de busca.
+2.  **Atualização do Feromônio Elitista:** Apenas a melhor formiga (a melhor da iteração ou a melhor global) é permitida a depositar feromônio após cada iteração. Isso intensifica a busca em torno das soluções mais promissoras.
+3.  **Atualização do Feromônio:** A atualização do feromônio no MMAS é semelhante ao AS, mas com a adição dos limites de feromônio. A equação de atualização é:
+$$τ_ij = (1 - ρ) * τ_ij + Δτ_ij^best$$
+
+Onde:
+
+*   $\tau_{ij}$ é a quantidade de feromônio na aresta $(i, j)$.
+*   $\rho$ é a taxa de evaporação do feromônio.
+*   $\Delta\tau_{ij}^{best}$ é a quantidade de feromônio depositada pela melhor formiga.
+
+**Benefícios:**
+
+*   **Melhora do Desempenho:** O MMAS geralmente supera o AS em termos de qualidade da solução e velocidade de convergência.
+*   **Prevenção da Estagnação:** Os mecanismos de limites de feromônio e reinicialização ajudam a evitar a estagnação da busca em ótimos locais.
+*   **Flexibilidade:** O MMAS pode ser adaptado para diferentes problemas de otimização combinatória, ajustando os parâmetros e a forma como a informação heurística é utilizada.
+
+O MMAS tem sido aplicado com sucesso em várias áreas, incluindo problemas de roteamento de veículos, sequenciamento e problemas de atribuição. Ele é uma ferramenta poderosa para encontrar soluções de alta qualidade para problemas complexos de otimização.
 
 ## Implementação
 
@@ -103,6 +186,8 @@ O conjunto de todas as soluções globalmente ótimas é denotado por $S^{*}_Ω�
 ## Referências
 
 - Dorigo, Marco & Di Caro, Gianni. (1999). The Ant Colony Optimization Meta-Heuristic. New Ideas in Optimization. (https://www.researchgate.net/publication/2831286_The_Ant_Colony_Optimization_Meta-Heuristic)
+
+- Dorigo, Marco & Stützle, Thomas. (2010). Ant Colony Optimization: Overview and Recent Advances. (https://www.researchgate.net/publication/225265937_Ant_Colony_Optimization_Overview_and_Recent_Advances)
 
 - http://www.scholarpedia.org/article/Ant_colony_optimization
 
