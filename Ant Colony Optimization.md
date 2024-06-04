@@ -169,7 +169,7 @@ O MMAS tem sido aplicado com sucesso em várias áreas, incluindo problemas de r
 | Argentina | 9152 cidades | 837479 | | |
 | Burma |  33708 cidades | 959304 | | |
 | China | 71009 cidades | 4566563 | | |
-| Djibouti | 38 cidades | 6656 | 3.54 segundos | 7148.31 |
+| Djibouti | 38 cidades | 6656 | 1.07 segundos | 6787.97 |
 | Egypt | 7146 cidades | 172387 |
 | Finland | 10639 cidades | 520527 | | |
 | Greece | 9882 cidades | 300899 | | |

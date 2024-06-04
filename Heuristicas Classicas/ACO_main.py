@@ -63,7 +63,7 @@ lista_arquivos = [
 24 - Panama.txt
 '''
 
-n, x, y = read_archive(pasta + lista_arquivos[15])
+n, x, y = read_archive(pasta + lista_arquivos[1])
 graph = calculate_Weights(n, x, y)
 
 #print(ACO.find_hyperparameters(graph, 0, 100, 10)) -> returned num_ants = 50, alpha=0.8, beta=0.8, rho=0.8
