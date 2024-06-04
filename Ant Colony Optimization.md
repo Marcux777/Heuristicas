@@ -63,7 +63,12 @@ O primeiro passo para a aplicação do ACO a um problema de otimização combina
 O espaço de busca $S$ é definido da seguinte forma. Um conjunto de variáveis discretas $X_i$, $i=1,…,n$, com valores $v_{i}^{j} ∈ Di={v^1_i,…,v^{|Di|}_i}$, é dado. Elementos de S são atribuições completas, ou seja, atribuições nas quais cada variável $X_i$ tem um valor $v^j_i$ atribuído de seu domínio $D_i$. O conjunto de soluções viáveis $S_Ω$ é dado pelos elementos de $S$ que satisfazem todas as restrições no conjunto $Ω$.
 
 Uma solução $s^{∗}∈ S_{Ω}$ é chamada de ótimo global se e somente se
+<span style="font-size: 100%;"> 
+
 $$f(s^{∗})≤f(s) ∀s∈S_{Ω}$$
+
+</span>
+
 O conjunto de todas as soluções globalmente ótimas é denotado por $S^{*}_Ω⊆S_Ω$. Resolver um COP requer encontrar pelo menos um $s^{∗}∈S^∗_Ω$.
 
 ## Algoritmo
@@ -80,9 +85,9 @@ O AS tem duas fases principais:
 2. Atualização do Feromônio: Após todas as formigas terem construído suas soluções, as trilhas de feromônio são atualizadas. Primeiro, o feromônio em todas as arestas evapora a uma taxa fixa. Em seguida, as formigas depositam feromônio nas arestas que percorreram, com a quantidade de feromônio depositada sendo inversamente proporcional ao comprimento do caminho percorrido.
 
 A regra de probabilidade para a escolha da próxima cidade é:
-
+<font size="5">
 $$ p(c_i^j | s_p) = \frac{{\tau_{ij}^\alpha * [\eta(c_i^j)]^\beta}}{{\sum {\tau_{il}^\alpha * [\eta(c_i^l)]^\beta}}}, \forall c_i^j \in N(s_p) $$
-
+</font>
 Onde:
 
 - $p(c_i^j | s_p)$ é a probabilidade de escolher a cidade $j$ dado o estado atual $s_p$.
@@ -91,9 +96,9 @@ Onde:
 - $\alpha$ e $\beta$ são parâmetros que controlam a importância relativa do feromônio e da informação heurística.
 
 A atualização do feromônio é feita da seguinte forma:
-
+<font size="5">
 $$τ_ij = (1 - ρ) * τ_ij + ΣΔτ_ij^k$$
-
+</font>
 Onde:
 
 - $\rho$ é a taxa de evaporação do feromônio.
@@ -110,8 +115,9 @@ O Ant Colony System (ACS) é uma variante do algoritmo Ant System (AS) que busca
 Além dessas modificações, o ACS geralmente utiliza uma estratégia elitista, onde apenas a melhor formiga (a melhor da iteração ou a melhor global) deposita feromônio após cada iteração. A quantidade de feromônio depositada é proporcional à qualidade da solução encontrada.
 
 A regra de atualização global do feromônio no ACS é a seguinte:
-
+<font size="5">
 $$\tau_{ij} = (1 - \rho) * \tau_{ij} + \rho/f(s_{gb})$$
+</font>
 
 Onde:
 
@@ -132,8 +138,9 @@ O MAX-MIN Ant System (MMAS) é uma variante do algoritmo Ant System (AS) que int
     *   **Inicialização e Reinicialização do Feromônio:** As trilhas de feromônio são inicializadas com o limite superior, promovendo a exploração no início. A reinicialização ocasional das trilhas ajuda a evitar a estagnação e a explorar novas regiões do espaço de busca.
 2.  **Atualização do Feromônio Elitista:** Apenas a melhor formiga (a melhor da iteração ou a melhor global) é permitida a depositar feromônio após cada iteração. Isso intensifica a busca em torno das soluções mais promissoras.
 3.  **Atualização do Feromônio:** A atualização do feromônio no MMAS é semelhante ao AS, mas com a adição dos limites de feromônio. A equação de atualização é:
+<font size="5">
 $$τ_ij = (1 - ρ) * τ_ij + Δτ_ij^best$$
-
+</font>
 Onde:
 
 *   $\tau_{ij}$ é a quantidade de feromônio na aresta $(i, j)$.
@@ -153,7 +160,10 @@ O MMAS tem sido aplicado com sucesso em várias áreas, incluindo problemas de r
 [Ant Colony Optimization](/Heuristicas%20Classicas/Ant_Colony_Optimization.py)
 
 ## BanchMark
-**Obs: Notação Americana**
+- **nota: Notação Americana**
+- **nota2: Os que estão em branco, serão testados no futuro :D**
+
+
 | Cidade | Instâncias | Custo Ótimo | Tempo Convergência | Custo Encontrado | 
 |---|---|---|---|---|
 | Argentina | 9152 cidades | 837479 | | |
@@ -164,14 +174,14 @@ O MMAS tem sido aplicado com sucesso em várias áreas, incluindo problemas de r
 | Finland | 10639 cidades | 520527 | | |
 | Greece | 9882 cidades | 300899 | | |
 | Honduras | 14473 cidades | 177105 | | |
-| Ireland | 
-| Japan |
-| Kazakhstan |
+| Ireland | 8246 cidades | 206,171 | | |
+| Japan | 9847 cidades | 491,924 | | |
+| Kazakhstan | 9976 cidades | 1,061,882 |
 | Luxenburgo| 980 cidades | 11340 | 2298.47 segundos | 12083.53 |
-| Morocco |
-| Nicaragua |
-| Oman |
-| Panama |
+| Morocco | 14185 cidades | 427377 | 
+| Nicaragua | 3496 cidades |  96132 | 
+| Oman | 1979 cidades | Não informado
+| Panama |  8079 cidades | Não informado | 
 | Qatar | 194 cidades |  9352 | 91.29 segundos | 9480.83 |
 | Rwanda | 1621 cidades | 26051 | 7110.96 segundos | 27456.62 |
 | Sweden | 24978 cidades | 855597 | 
@@ -197,4 +207,7 @@ O MMAS tem sido aplicado com sucesso em várias áreas, incluindo problemas de r
 
 - M. Dorigo, M. Birattari and T. Stutzle, "Ant colony optimization," in IEEE Computational Intelligence Magazine, vol. 1, no. 4, pp. 28-39, Nov. 2006, doi: 10.1109/MCI.2006.329691. (https://ieeexplore.ieee.org/document/4129846)
 
-- (https://www.sciencedirect.com/science/article/pii/S095219761200067X?via%3Dihub)
+- R.F. Tavares Neto, M. Godinho Filho,
+Literature review regarding Ant Colony Optimization applied to scheduling problems: Guidelines for implementation and directions for future research,
+Engineering Applications of Artificial Intelligence,
+Volume 26, Issue 1,2013,Pages 150-161,ISSN 0952-1976,https://doi.org/10.1016/j.engappai.2012.03.011.

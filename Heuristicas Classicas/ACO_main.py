@@ -31,7 +31,8 @@ lista_arquivos = [
     'Djibouti.txt', 'Qatar.txt', 'Argentina.txt', 'Burma.txt', 'China.txt',
     'Egypt.txt', 'Finland.txt', 'Greece.txt', 'Honduras.txt', 'Luxembourg.txt',
     'Zimbabwe.txt', 'Uruguay.txt', 'Yemen.txt', 'Western Sahara.txt', 'Vietnam.txt',
-    'Tanzania.txt', 'Sweden.txt', 'Rwanda.txt'
+    'Tanzania.txt', 'Sweden.txt', 'Rwanda.txt', 'Ireland.txt', 'Japan.txt',
+    'Kazakhstan.txt', 'Morocco.txt', 'Nicaragua.txt', 'Oman.txt', 'Panama.txt'
                   ]
 
 '''
@@ -53,6 +54,13 @@ lista_arquivos = [
 15 - Tanzania.txt
 16 - Sweden.txt
 17 - Rwanda.txt
+18 - Ireland.txt
+19 - Japan.txt
+20 - Kazakhstan.txt
+21 - Morocco.txt
+22 - Nicaragua.txt
+23 - Oman.txt
+24 - Panama.txt
 '''
 
 n, x, y = read_archive(pasta + lista_arquivos[15])
