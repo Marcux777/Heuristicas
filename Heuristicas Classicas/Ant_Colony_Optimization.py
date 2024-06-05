@@ -38,6 +38,8 @@ class ACO:
             Encontra os melhores hiperparâmetros para o algoritmo ACO.
         two_opt(solution) -> list:
             Aplica a heurística 2-opt para melhorar uma solução.
+        lin_kernighan(solution, graph) -> list:
+            Aplica a heurística Lin-Kernighan para melhorar uma solução.
         
     """
 
@@ -220,6 +222,7 @@ class ACO:
             self.update_pheromones(solutions)
 
         self.best_solution = self.two_opt(self.best_solution)
+        #self.best_solution = self.lin_kernighan(self.best_solution)
         best_cost = self.calculate_cost(self.best_solution)
 
         return self.best_solution, best_cost
@@ -296,7 +299,7 @@ class ACO:
             improved = False
             for i in range(1, len(solution) - 2):
                 for j in range(i + 1, len(solution)):
-                    if j - i == 1: continue  # changes nothing, skip then
+                    if j - i == 1: continue 
                     new_solution = solution[:i] + solution[i:j][::-1] + solution[j:]
                     old_cost = self.calculate_cost(solution[i-1:i+1]) + self.calculate_cost(solution[j-1:j+1])
                     new_cost = self.calculate_cost(new_solution[i-1:i+1]) + self.calculate_cost(new_solution[j-1:j+1])
