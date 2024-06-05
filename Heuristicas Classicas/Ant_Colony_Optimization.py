@@ -291,17 +291,26 @@ class ACO:
             list: Nova solução após a aplicação da heurística 2-opt.
         """
         best_solution = solution
+        best_cost = self.calculate_cost(solution)
         improved = True
+
         while improved:
             improved = False
             for i in range(1, len(solution) - 2):
                 for j in range(i + 1, len(solution)):
-                    if j - i == 1: continue  # changes nothing, skip then
+                    if j - i == 1:
+                        continue  # changes nothing, skip then
+
+                    # Cria uma nova solução invertendo a sublista entre i e j
                     new_solution = solution[:i] + solution[i:j][::-1] + solution[j:]
-                    old_cost = self.calculate_cost(solution[i-1:i+1]) + self.calculate_cost(solution[j-1:j+1])
-                    new_cost = self.calculate_cost(new_solution[i-1:i+1]) + self.calculate_cost(new_solution[j-1:j+1])
-                    if new_cost < old_cost:
-                        solution = new_solution
+                    new_cost = self.calculate_cost(new_solution)
+
+                    if new_cost < best_cost:
+                        best_solution = new_solution
+                        best_cost = new_cost
                         improved = True
-        return solution
+
+            solution = best_solution
+
+        return best_solution
     
