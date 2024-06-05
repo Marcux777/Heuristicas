@@ -185,9 +185,9 @@ Na implementação foi utilizado a busca aleatoria, para encontrar a melhor comb
 | Finland | 10639 cidades | 520527 | | |
 | Greece | 9882 cidades | 300899 | | |
 | Honduras | 14473 cidades | 177105 | | |
-| Ireland | 8246 cidades | 206,171 | | |
-| Japan | 9847 cidades | 491,924 | | |
-| Kazakhstan | 9976 cidades | 1,061,882 |
+| Ireland | 8246 cidades | 206171 | | |
+| Japan | 9847 cidades | 491924 | | |
+| Kazakhstan | 9976 cidades | 1061882 |
 | Luxemburgo| 980 cidades | 11340 | 930.36 segundos | 12083.53 |
 | Morocco | 14185 cidades | 427377 | 
 | Nicaragua | 3496 cidades |  96132 | 11188.67 segundos | 103752.18
