@@ -86,9 +86,11 @@ O AS tem duas fases principais:
 2. Atualização do Feromônio: Após todas as formigas terem construído suas soluções, as trilhas de feromônio são atualizadas. Primeiro, o feromônio em todas as arestas evapora a uma taxa fixa. Em seguida, as formigas depositam feromônio nas arestas que percorreram, com a quantidade de feromônio depositada sendo inversamente proporcional ao comprimento do caminho percorrido.
 
 A regra de probabilidade para a escolha da próxima cidade é:
+
 <font size="5">
-$$ p(c_i^j | s_p) = \frac{{\tau_{ij}^\alpha * [\eta(c_i^j)]^\beta}}{{\sum {\tau_{il}^\alpha * [\eta(c_i^l)]^\beta}}}, \forall c_i^j \in N(s_p) $$
+$$p(c_i^j | s_p) = \frac{{\tau_{ij}^\alpha * [\eta(c_i^j)]^\beta}}{{\sum {\tau_{il}^\alpha * [\eta(c_i^l)]^\beta}}}, \forall c_i^j \in N(s_p)$$
 </font>
+
 Onde:
 
 - $p(c_i^j | s_p)$ é a probabilidade de escolher a cidade $j$ dado o estado atual $s_p$.
@@ -97,9 +99,11 @@ Onde:
 - $\alpha$ e $\beta$ são parâmetros que controlam a importância relativa do feromônio e da informação heurística.
 
 A atualização do feromônio é feita da seguinte forma:
+
 <font size="5">
 $$τ_{ij} = (1 - ρ) * τ_{ij} + ΣΔτ_{ij}^k$$
 </font>
+
 Onde:
 
 - $\rho$ é a taxa de evaporação do feromônio.
@@ -116,6 +120,7 @@ O Ant Colony System (ACS) é uma variante do algoritmo Ant System (AS) que busca
 Além dessas modificações, o ACS geralmente utiliza uma estratégia elitista, onde apenas a melhor formiga (a melhor da iteração ou a melhor global) deposita feromônio após cada iteração. A quantidade de feromônio depositada é proporcional à qualidade da solução encontrada.
 
 A regra de atualização global do feromônio no ACS é a seguinte:
+
 <font size="5">
 $$\tau_{ij} = (1 - \rho) * \tau_{ij} + \frac{\rho}{f(s_{gb})}$$
 </font>
@@ -139,9 +144,11 @@ O MAX-MIN Ant System (MMAS) é uma variante do algoritmo Ant System (AS) que int
     *   **Inicialização e Reinicialização do Feromônio:** As trilhas de feromônio são inicializadas com o limite superior, promovendo a exploração no início. A reinicialização ocasional das trilhas ajuda a evitar a estagnação e a explorar novas regiões do espaço de busca.
 2.  **Atualização do Feromônio Elitista:** Apenas a melhor formiga (a melhor da iteração ou a melhor global) é permitida a depositar feromônio após cada iteração. Isso intensifica a busca em torno das soluções mais promissoras.
 3.  **Atualização do Feromônio:** A atualização do feromônio no MMAS é semelhante ao AS, mas com a adição dos limites de feromônio. A equação de atualização é:
+
 <font size="5">
 $$τ_{ij} = (1 - ρ) * τ_{ij} + Δτ_{ij}^{best}$$
 </font>
+
 Onde:
 
 *   $\tau_{ij}$ é a quantidade de feromônio na aresta $(i, j)$.
