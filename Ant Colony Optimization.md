@@ -87,9 +87,7 @@ O AS tem duas fases principais:
 
 A regra de probabilidade para a escolha da próxima cidade é:
 
-<font size="5">
 $$p(c_i^j | s_p) = \frac{{\tau_{ij}^\alpha * [\eta(c_i^j)]^\beta}}{{\sum {\tau_{il}^\alpha * [\eta(c_i^l)]^\beta}}}, \forall c_i^j \in N(s_p)$$
-</font>
 
 Onde:
 
@@ -100,9 +98,7 @@ Onde:
 
 A atualização do feromônio é feita da seguinte forma:
 
-<font size="5">
 $$τ_{ij} = (1 - ρ) * τ_{ij} + ΣΔτ_{ij}^k$$
-</font>
 
 Onde:
 
@@ -121,9 +117,7 @@ Além dessas modificações, o ACS geralmente utiliza uma estratégia elitista, 
 
 A regra de atualização global do feromônio no ACS é a seguinte:
 
-<font size="5">
 $$\tau_{ij} = (1 - \rho) * \tau_{ij} + \frac{\rho}{f(s_{gb})}$$
-</font>
 
 Onde:
 
@@ -145,9 +139,7 @@ O MAX-MIN Ant System (MMAS) é uma variante do algoritmo Ant System (AS) que int
 2.  **Atualização do Feromônio Elitista:** Apenas a melhor formiga (a melhor da iteração ou a melhor global) é permitida a depositar feromônio após cada iteração. Isso intensifica a busca em torno das soluções mais promissoras.
 3.  **Atualização do Feromônio:** A atualização do feromônio no MMAS é semelhante ao AS, mas com a adição dos limites de feromônio. A equação de atualização é:
 
-<font size="5">
 $$τ_{ij} = (1 - ρ) * τ_{ij} + Δτ_{ij}^{best}$$
-</font>
 
 Onde:
 
