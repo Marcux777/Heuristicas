@@ -175,7 +175,7 @@ Na implementação foi utilizado a busca aleatoria, para encontrar a melhor comb
 - **nota2: Os que estão em branco, serão testados no futuro :D**
 
 
-| Cidade | Instâncias | Custo Ótimo | Tempo Convergência | Custo Encontrado | 
+| País | Instâncias | Custo Ótimo | Tempo Convergência | Custo Encontrado | 
 |---|---|---|---|---|
 | Argentina | 9152 cidades | 837479 | | |
 | Burma |  33708 cidades | 959304 | | |
