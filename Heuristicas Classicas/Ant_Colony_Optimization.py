@@ -40,6 +40,10 @@ class ACO:
             Aplica a heurística 2-opt para melhorar uma solução.
         lin_kernighan(solution, graph) -> list:
             Aplica a heurística Lin-Kernighan para melhorar uma solução.
+        tabu_search(start_city, max_iterations, tabu_size) -> tuple:
+            Aplica a busca tabu para melhorar a solução encontrada pelo ACO.
+        generate_neighbors(solution) -> list:
+            Gera as vizinhanças de uma solução.
         
     """
 
@@ -98,24 +102,29 @@ class ACO:
     def select_next_neighbor(self, current_city, visited_cities):
         """
         Seleciona a próxima cidade a ser visitada com base na heurística do vizinho mais próximo.
-
+    
         Args:
             current_city (int): Índice da cidade atual.
-            visited_cities (list): Lista de cidades já visitadas.
-
+            visited_cities (set): Conjunto de cidades já visitadas.
+    
         Returns:
             int: Índice da próxima cidade a ser visitada.
         """
-
+    
+        # Use um conjunto para verificações mais rápidas de cidades visitadas
+        unvisited_cities = set(range(len(self.graph))) - visited_cities
+    
+        # Encontre o vizinho mais próximo entre as cidades não visitadas
         min_distance = float('inf')
         next_city = None
-
-        for city, distance in enumerate(self.graph[current_city]):
-            if city not in visited_cities and distance < min_distance:
+        for city in unvisited_cities:
+            distance = self.graph[current_city][city]
+            if distance < min_distance:
                 min_distance = distance
                 next_city = city
-
+    
         return next_city
+    
     
 
     def select_next_city(self, current_city, visited_cities):
@@ -308,3 +317,70 @@ class ACO:
                         improved = True
         return solution
     
+    def tabu_search(self, start_city, max_iterations, tabu_size):
+        """
+        Aplica a busca tabu para melhorar a solução encontrada pelo ACO.
+
+        Args:
+            start_city (int): Índice da cidade inicial.
+            max_iterations (int): Número máximo de iterações.
+            tabu_size (int): Tamanho da lista tabu.
+
+        Returns:
+            tuple: Tupla contendo a melhor solução e seu custo.
+        """
+
+        current_solution = self.construct_solution(start_city)
+        best_solution = current_solution
+        best_cost = self.calculate_cost(current_solution)
+        tabu_list = []
+
+        for _ in range(max_iterations):
+            # Gera vizinhos da solução atual
+            neighbors = self.generate_neighbors(current_solution)
+
+            # Remove vizinhos da lista tabu
+            neighbors = [neighbor for neighbor in neighbors if neighbor not in tabu_list]
+
+            # Seleciona o melhor vizinho
+            best_neighbor = None
+            best_neighbor_cost = float('inf')
+            for neighbor in neighbors:
+                neighbor_cost = self.calculate_cost(neighbor)
+                if neighbor_cost < best_neighbor_cost:
+                    best_neighbor = neighbor
+                    best_neighbor_cost = neighbor_cost
+
+            # Atualiza a solução atual
+            current_solution = best_neighbor
+
+            # Atualiza a lista tabu
+            tabu_list.append(current_solution)
+            if len(tabu_list) > tabu_size:
+                tabu_list.pop(0)
+
+            # Atualiza a melhor solução
+            if best_neighbor_cost < best_cost:
+                best_solution = best_neighbor
+                best_cost = best_neighbor_cost
+
+        return best_solution, best_cost
+
+    def generate_neighbors(self, solution):
+        """
+        Gera vizinhos da solução atual.
+
+        Args:
+            solution (list): Lista de cidades que compõem a solução.
+
+        Returns:
+            list: Lista de vizinhos da solução atual.
+        """
+
+        neighbors = []
+        for i in range(1, len(solution) - 1):
+            for j in range(i + 1, len(solution)):
+                neighbor = solution[:i] + solution[i:j][::-1] + solution[j:]
+                neighbors.append(neighbor)
+
+        return neighbors
