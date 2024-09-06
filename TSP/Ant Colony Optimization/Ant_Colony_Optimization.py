@@ -60,28 +60,15 @@ class ACO:
             visited[next_city] = True
             curr = next_city
 
-        solution.append(start_city)
-
         return solution
 
     def probabilistic_choice(self, visited, current_city):
-        unvisited_cities = np.where(~visited)[0]
+        unvisited_cities = np.where(~visited)[0]  # Índices das cidades não visitadas
 
         pheromones = self.pheromones[current_city, unvisited_cities]
         distances = self.graph[current_city, unvisited_cities]
-        epsilon = 1e-6  # Pequena constante para evitar divisão por zero
-        probabilities = (
-            pheromones**self.alpha * (1 / (distances + epsilon)) ** self.beta
-        )
-        total_prob = np.sum(probabilities)
-
-        if total_prob == 0:
-            probabilities = np.ones_like(probabilities) / len(probabilities)
-        else:
-            probabilities /= total_prob
-
-        if np.isnan(probabilities).any():
-            probabilities = np.ones_like(probabilities) / len(probabilities)
+        probabilities = pheromones**self.alpha * (1 / distances) ** self.beta
+        probabilities /= np.sum(probabilities)
 
         next_city = np.random.choice(unvisited_cities, p=probabilities)
         return next_city
