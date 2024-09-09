@@ -1,5 +1,25 @@
 # Ant Colony Optimization - Otimização Colonia de Formigas
 
+### Sumario
+
+- [Ant Colony Optimization - Otimização Colonia de Formigas](#ant-colony-optimization---otimização-colonia-de-formigas)
+    - [Sumario](#sumario)
+  - [Introdução](#introdução)
+    - [Inspiração e Princípios Básicos](#inspiração-e-princípios-básicos)
+    - [BioInspiração](#bioinspiração)
+    - [Componentes Essenciais da ACO](#componentes-essenciais-da-aco)
+    - [Caracteristicas da ACO](#caracteristicas-da-aco)
+    - [Aplicações da ACO](#aplicações-da-aco)
+  - [Definição Formal](#definição-formal)
+- [Algoritmo](#algoritmo)
+  - [Ant System (AS)](#ant-system-as)
+  - [Ant Colony System (ACS)](#ant-colony-system-acs)
+    - [Implementação](#implementação)
+  - [O MAX-MIN Ant System (MMAS)](#o-max-min-ant-system-mmas)
+    - [Implementação](#implementação-1)
+  - [Hiperparâmetros](#hiperparâmetros)
+- [BanchMark](#banchmark)
+- [Referências](#referências)
 
 ## Introdução
 
@@ -72,9 +92,9 @@ $$f(s^{∗})≤f(s) ∀s∈S_{Ω}$$
 
 O conjunto de todas as soluções globalmente ótimas é denotado por $S^{*}_Ω⊆S_Ω$. Resolver um COP requer encontrar pelo menos um $s^{∗}∈S^∗_Ω$.
 
-## Algoritmo
+# Algoritmo
 
-### Ant System (AS)
+## Ant System (AS)
 
 O Ant System (AS) é o primeiro algoritmo ACO proposto na literatura.
 No AS, formigas artificiais constroem iterativamente soluções (caminhos em um grafo) e depositam feromônios nas arestas que percorreram. A quantidade de feromônio depositada é inversamente proporcional ao custo da solução (comprimento do caminho). As arestas com feromônio mais alto são mais propensas a serem escolhidas pelas formigas nas próximas iterações.
@@ -105,7 +125,7 @@ Onde:
 - $\rho$ é a taxa de evaporação do feromônio.
 - $\Delta\tau_{ij}^k$ é a quantidade de feromônio depositada pela formiga $k$ na aresta $(i, j)$.
 
-### Ant Colony System (ACS)
+## Ant Colony System (ACS)
 
 O Ant Colony System (ACS) é uma variante do algoritmo Ant System (AS) que busca melhorar o desempenho da otimização por colônia de formigas, aumentando a importância da exploração da informação coletada por formigas anteriores em relação à exploração do espaço de busca. Ele introduz duas modificações principais em relação ao AS:
 
@@ -127,7 +147,11 @@ Onde:
 
 O ACS também costuma ser combinado com algoritmos de busca local para otimizar as soluções encontradas pelas formigas. Essa combinação de construção probabilística de soluções com otimização local tem se mostrado eficaz em muitas aplicações.
 
-### O MAX-MIN Ant System (MMAS)
+### Implementação
+
+[MMAS](Heuristicas%20Classicas/Ant%20Colony%20Optimization/Ant_Colony_Optimization.py)
+
+## O MAX-MIN Ant System (MMAS)
 
 O MAX-MIN Ant System (MMAS) é uma variante do algoritmo Ant System (AS) que introduz algumas modificações importantes para melhorar o desempenho e evitar a estagnação da busca.
 
@@ -155,6 +179,10 @@ Onde:
 
 O MMAS tem sido aplicado com sucesso em várias áreas, incluindo problemas de roteamento de veículos, sequenciamento e problemas de atribuição. Ele é uma ferramenta poderosa para encontrar soluções de alta qualidade para problemas complexos de otimização.
 
+### Implementação
+
+[MMAS](Heuristicas%20Classicas/Ant%20Colony%20Optimization/Max_Min_Ant_System.py)
+
 ## Hiperparâmetros
 
 *   **α (alfa):** Controla a influência dos feromônios na escolha das arestas. Valores mais altos de α aumentam a importância dos feromônios, favorecendo a exploração de soluções já encontradas. Valores mais baixos de α incentivam a exploração de novas áreas do espaço de busca.
@@ -166,11 +194,8 @@ A escolha dos hiperparâmetros da ACO geralmente envolve experimentação e ajus
 
 Na implementação foi utilizado a busca aleatoria, para encontrar a melhor combinação de hiperparâmetros. A busca aleatória amostra aleatoriamente valores para os hiperparâmetros dentro de um intervalo predefinido. Essa amostragem aleatória pode ser repetida várias vezes, e a melhor combinação de hiperparâmetros encontrada é selecionada.
 
-## Implementação
 
-[Ant Colony Optimization](/Heuristicas%20Classicas/Ant_Colony_Optimization.py)
-
-## BanchMark
+# BanchMark
 - **nota: Notação Americana**
 - **nota2: Os que estão em branco, serão testados no futuro :D**
 
@@ -204,7 +229,7 @@ Na implementação foi utilizado a busca aleatoria, para encontrar a melhor comb
 | Zimbabwe | 929 cidades | 95345 | 812.42 segundos |100790.92
 
 
-## Referências
+# Referências
 
 - Dorigo, Marco & Di Caro, Gianni. (1999). The Ant Colony Optimization Meta-Heuristic. New Ideas in Optimization. (https://www.researchgate.net/publication/2831286_The_Ant_Colony_Optimization_Meta-Heuristic)
 
