@@ -3,6 +3,16 @@ import math
 from sklearn.model_selection import ParameterGrid, ParameterSampler
 import heapq
 import random
+import sys
+import os
+
+# Adiciona o caminho da pasta 'heuristicas' ao sys.path
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "heuristicas"))
+)
+
+# Agora você pode importar o módulo K_OPT
+from K_OPT import k_opt
 
 
 class ACO:
@@ -38,15 +48,18 @@ class ACO:
         self.best_solution = None
         self.best_cost = float("inf")
 
-    def run(self, start_city, max_iterations):
-        for _ in range(max_iterations):
-            solutions = [
-                self.generate_solutions(start_city) for _ in range(self.num_ants)
-            ]
-            self.update_pheromones(solutions)
-            self.update_best_solution(solutions)
-
-        return [self.best_solution, self.best_cost]
+        def run(self, start_city, max_iterations, k=2):
+            for _ in range(max_iterations):
+                solutions = [
+                    self.generate_solutions(start_city) for _ in range(self.num_ants)
+                ]
+                optimized_solutions = []
+                for solution in solutions:
+                    optimized_solution, cost = k_opt(self.graph, solution, k)
+                    optimized_solutions.append((optimized_solution, cost))
+                self.update_pheromones(optimized_solutions)
+                self.update_best_solution(optimized_solutions)
+            return [self.best_solution, self.best_cost]
 
     def generate_solutions(self, start_city):
         num_cities = len(self.graph)

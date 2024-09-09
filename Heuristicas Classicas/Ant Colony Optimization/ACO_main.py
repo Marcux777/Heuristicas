@@ -68,7 +68,7 @@ if __name__ == "__main__":
         "Panama.txt",
     ]
 
-    n, x, y = read_archive(pasta + lista_arquivos[1])
+    n, x, y = read_archive(pasta + lista_arquivos[0])
     graph = calculate_Weights(n, x, y)
 
     num_ants = 100
