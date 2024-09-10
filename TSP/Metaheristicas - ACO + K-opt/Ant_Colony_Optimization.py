@@ -42,19 +42,20 @@ class ACO:
         self.best_cost = float("inf")
         self.K_opt = K_Opt(graph)
 
-    def run(self, start_city, max_iterations, k=2):
+    def run(self, start_city, max_iterations, k=3):
         for _ in range(max_iterations):
             solutions = [
                 self.generate_solutions(start_city) for _ in range(self.num_ants)
             ]
             # Aplicar a k-opt para cada solução
-            if _ % 10 == 0 or self.best_solution == None:
+            if _ == max_iterations - 1 or self.best_solution == None:
                 optimized_solutions = [
                     self.K_opt.k_opt(solution, k)[0] for solution in solutions
                 ]
 
             self.update_pheromones(optimized_solutions)
             self.update_best_solution(optimized_solutions)
+
         return [self.best_solution, self.best_cost]
 
     def generate_solutions(self, start_city):

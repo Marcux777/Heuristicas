@@ -69,15 +69,15 @@ if __name__ == "__main__":
         "Panama.txt",
     ]
 
-    n, x, y = read_archive(pasta + lista_arquivos[1])
+    n, x, y = read_archive(pasta + lista_arquivos[0])
     graph = calculate_Weights(x, y)
 
-    num_ants = 10
+    num_ants = 100
     alpha = 0.8
     beta = 0.8
     rho = 0.9
     start_city = 0
-    max_iterations = 10
+    max_iterations = 100
 
     start_time = time.time()
 
