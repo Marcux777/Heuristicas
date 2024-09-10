@@ -3,6 +3,9 @@ import math
 from sklearn.model_selection import ParameterGrid, ParameterSampler
 import heapq
 import random
+import sys
+import os
+from K_Opt import K_Opt
 
 
 class ACO:
@@ -37,15 +40,21 @@ class ACO:
         self.pheromones = np.ones_like(self.graph)
         self.best_solution = None
         self.best_cost = float("inf")
+        self.K_opt = K_Opt(graph)
 
-    def run(self, start_city, max_iterations):
+    def run(self, start_city, max_iterations, k=2):
         for _ in range(max_iterations):
             solutions = [
                 self.generate_solutions(start_city) for _ in range(self.num_ants)
             ]
-            self.update_pheromones(solutions)
-            self.update_best_solution(solutions)
+            # Aplicar a k-opt para cada solução
+            if _ % 10 == 0 or self.best_solution == None:
+                optimized_solutions = [
+                    self.K_opt.k_opt(solution, k)[0] for solution in solutions
+                ]
 
+            self.update_pheromones(optimized_solutions)
+            self.update_best_solution(optimized_solutions)
         return [self.best_solution, self.best_cost]
 
     def generate_solutions(self, start_city):
@@ -60,15 +69,28 @@ class ACO:
             visited[next_city] = True
             curr = next_city
 
+        solution.append(start_city)
+
         return solution
 
     def probabilistic_choice(self, visited, current_city):
-        unvisited_cities = np.where(~visited)[0]  # Índices das cidades não visitadas
+        unvisited_cities = np.where(~visited)[0]
 
         pheromones = self.pheromones[current_city, unvisited_cities]
         distances = self.graph[current_city, unvisited_cities]
-        probabilities = pheromones**self.alpha * (1 / distances) ** self.beta
-        probabilities /= np.sum(probabilities)
+        epsilon = 1e-6  # Pequena constante para evitar divisão por zero
+        probabilities = (
+            pheromones**self.alpha * (1 / (distances + epsilon)) ** self.beta
+        )
+        total_prob = np.sum(probabilities)
+
+        if total_prob == 0:
+            probabilities = np.ones_like(probabilities) / len(probabilities)
+        else:
+            probabilities /= total_prob
+
+        if np.isnan(probabilities).any():
+            probabilities = np.ones_like(probabilities) / len(probabilities)
 
         next_city = np.random.choice(unvisited_cities, p=probabilities)
         return next_city

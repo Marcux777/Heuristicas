@@ -149,7 +149,7 @@ O ACS também costuma ser combinado com algoritmos de busca local para otimizar 
 
 ### Implementação
 
-[MMAS](Heuristicas%20Classicas/Ant%20Colony%20Optimization/Ant_Colony_Optimization.py)
+[ACO](Heuristicas%20Classicas/Ant%20Colony%20Optimization/Ant_Colony_Optimization.py)
 
 ## O MAX-MIN Ant System (MMAS)
 

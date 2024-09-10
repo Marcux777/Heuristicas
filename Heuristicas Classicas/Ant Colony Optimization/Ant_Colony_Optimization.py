@@ -6,14 +6,6 @@ import random
 import sys
 import os
 
-# Adiciona o caminho da pasta 'heuristicas' ao sys.path
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "heuristicas"))
-)
-
-# Agora você pode importar o módulo K_OPT
-from K_OPT import k_opt
-
 
 class ACO:
     def __init__(self, graph, num_ants, alpha=1.0, beta=2.0, rho=0.5, Q=1.0):
@@ -48,18 +40,22 @@ class ACO:
         self.best_solution = None
         self.best_cost = float("inf")
 
-        def run(self, start_city, max_iterations, k=2):
-            for _ in range(max_iterations):
-                solutions = [
-                    self.generate_solutions(start_city) for _ in range(self.num_ants)
-                ]
-                optimized_solutions = []
-                for solution in solutions:
+    def run(self, start_city, max_iterations, k=-1):
+        for _ in range(max_iterations):
+            solutions = [
+                self.generate_solutions(start_city) for _ in range(self.num_ants)
+            ]
+            """optimized_solutions = []
+            for solution in solutions:
+                # Otimiza a solução com k-opt
+                if k != -1:
+                    # aqui é chamado o k-opt
+                    # caso seja igual a -1, prevejo que é para uma solução sem k-opt
                     optimized_solution, cost = k_opt(self.graph, solution, k)
-                    optimized_solutions.append((optimized_solution, cost))
-                self.update_pheromones(optimized_solutions)
-                self.update_best_solution(optimized_solutions)
-            return [self.best_solution, self.best_cost]
+                optimized_solutions.append((optimized_solution, cost))"""
+            self.update_pheromones(solutions)
+            self.update_best_solution(solutions)
+        return [self.best_solution, self.best_cost]
 
     def generate_solutions(self, start_city):
         num_cities = len(self.graph)

@@ -6,7 +6,7 @@ import numpy as np
 from multiprocessing import Pool, cpu_count
 
 
-def calculate_Weights(n, x, y):
+def calculate_Weights(x, y):
     x = np.array(x)
     y = np.array(y)
 
@@ -34,7 +34,7 @@ def read_archive(caminho_arquivo):
 
 
 def run_aco(graph, num_ants, alpha, beta, rho, start_city, max_iterations):
-    aco = MMAS(graph, num_ants=num_ants, alpha=alpha, beta=beta, rho=rho)
+    aco = ACO(graph, num_ants=num_ants, alpha=alpha, beta=beta, rho=rho)
     best_solution, best_cost = aco.run(start_city, max_iterations)
     return best_solution, best_cost
 
@@ -70,14 +70,14 @@ if __name__ == "__main__":
     ]
 
     n, x, y = read_archive(pasta + lista_arquivos[1])
-    graph = calculate_Weights(n, x, y)
+    graph = calculate_Weights(x, y)
 
-    num_ants = 100
+    num_ants = 10
     alpha = 0.8
     beta = 0.8
     rho = 0.9
     start_city = 0
-    max_iterations = 100
+    max_iterations = 10
 
     start_time = time.time()
 
