@@ -40,7 +40,7 @@ def run_aco(graph, num_ants, alpha, beta, rho, start_city, max_iterations):
 
 
 if __name__ == "__main__":
-    pasta = "Entradas\\"
+    pasta = "EntradasTSP\\"
     lista_arquivos = [
         "Djibouti.txt",
         "Qatar.txt",
@@ -91,7 +91,6 @@ if __name__ == "__main__":
             ],
         )
 
-    # Encontrar a melhor solução entre todas as execuções paralelas
     best_solution, best_cost = min(results, key=lambda x: x[1])
 
     end_time = time.time()
