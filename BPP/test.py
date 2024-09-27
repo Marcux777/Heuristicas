@@ -1,15 +1,16 @@
 import random
 import os
 import glob
+import time
 
 
 class GGA:
-    def __init__(self, bin_size, population_size, generations, mutation_rate, itens):
-        self.bin_size = bin_size
+    def __init__(self, data, population_size=100, generations=100, mutation_rate=0.1):
+        self.bin_size = data["bin_capacity"]
         self.population_size = population_size
         self.generations = generations
         self.mutation_rate = mutation_rate
-        self.itens = itens
+        self.itens = data["weights"]
         self.itens.sort(reverse=True)
         self.population = self.initialize_population()
         self.fitness = []
@@ -86,36 +87,40 @@ class GGA:
             self.best = self.population[self.fitness.index(best_fitness)]
 
 
-caminho = "C:\\Users\\20211002801130\\Documents\\GitHub\\Heuristicas\\BPP\\BPP Instances\\E_120_N_40_60\\E_120_N_40_60_BF0000.bpp"
+def create_data(Arquivo):
+    caminho = f"C:\\Users\\20211002801130\\Documents\\GitHub\\Heuristicas\\BPP\\BPP Instances\\E_120_N_40_60\\{Arquivo}"
+
+    def read_instance(arquivo):
+        with open(arquivo, "r") as file:
+            lines = file.read()
+
+        return lines
+
+    itens = list(map(int, filter(None, read_instance(caminho).split("\n"))))
+    print(itens)
+    tam, bin_size = itens[0], itens[1]
+    itens.pop(0), itens.pop(0)
+    data = {
+        "weights": itens,
+        "items": list(range(len(itens))),
+        "bins": list(range(len(itens))),
+        "bin_capacity": bin_size,
+    }
+    return data
 
 
-def read_instance(arquivo):
-    with open(arquivo, "r") as file:
-        lines = file.read()
+data = create_data("E_120_N_40_60_BF0000.bpp")
 
-    return lines
-
-
-"""itens = list(map(int, filter(None, read_instance(caminho).split("\n"))))
-print(itens)
-tam, bin_size = itens[0], itens[1]
-itens.pop(0), itens.pop(0)"""
-
-itens = [48, 30, 19, 36, 36, 27, 42, 42, 36, 24, 30]
-bin_size = 100
-
-# 30 27 30 = 87
-# 48 42 = 90
-# 19 36 42 = 97
-# 36 36 24 = 96
-
-
+start_time = time.time()
 gga = GGA(
-    bin_size=bin_size,
+    data,
     population_size=100,
     generations=200,
     mutation_rate=0.1,
-    itens=itens,
 )
 gga.run()
+end_time = time.time()
+solution = gga.best
+print(f"Tempo de execução: {end_time - start_time} segundos")
 print("Best solution:", gga.best)
+print("solution size: ", len(solution))
