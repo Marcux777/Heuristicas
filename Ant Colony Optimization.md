@@ -107,7 +107,9 @@ O AS tem duas fases principais:
 
 A regra de probabilidade para a escolha da próxima cidade é:
 
+{% raw %}
 $$p(c_i^j | s_p) = \frac{{\tau_{ij}^\alpha * [\eta(c_i^j)]^\beta}}{{\sum {\tau_{il}}^\alpha * [\eta(c_i^l)]^\beta}}, \forall c_i^j \in N(s_p)$$
+{% endraw %}
 
 Onde:
 
