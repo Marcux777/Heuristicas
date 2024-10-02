@@ -20,10 +20,8 @@ class K_Opt:
         n = len(solution)
         if k > n:
             return []
-        indices = list(range(n))
-        for comb in combinations(indices, k):
-            if len(set(comb)) == k:
-                yield comb
+        indices = np.arange(n)
+        return np.array(list(combinations(indices, k)))
 
     def reconnect_edges(self, solution, move, k):
         """
@@ -50,7 +48,8 @@ class K_Opt:
 
     def _reconnect_3_opt(self, solution, move):
         i, j, l = sorted(move)
-        a, b, c, d = solution[:i], solution[i:j], solution[j:l], solution[l:]
+        a, b, c = solution[:i], solution[i:j], solution[j:l]
+        d = solution[l:]
         return [
             a + b + c + d,
             a + b + c[::-1] + d,
@@ -68,16 +67,13 @@ class K_Opt:
         best_solution = solution
         best_cost = self.calculate_cost(solution)
 
-        for i in range(1, k):
-            for j in range(i + 2, k + 1):
-                new_solution = solution[:]
-                new_solution[move[i - 1] : move[j]] = solution[
-                    move[j - 1] : move[i - 1] : -1
-                ]
-                new_cost = self.calculate_cost(new_solution)
-                if new_cost < best_cost:
-                    best_solution = new_solution
-                    best_cost = new_cost
+        for i in range(1, k - 1):
+            new_solution = solution[:move[i]] + solution[move[i]
+                :move[i + 1]][::-1] + solution[move[i + 1]:]
+            new_cost = self.calculate_cost(new_solution)
+            if new_cost < best_cost:
+                best_solution = new_solution
+                best_cost = new_cost
         return [best_solution]
 
     def calculate_cost(self, solution):
@@ -90,10 +86,8 @@ class K_Opt:
         Returns:
         - cost (float): The cost of the given solution.
         """
-        cost = 0
-        for i in range(len(solution) - 1):
-            cost += self.graph[solution[i]][solution[i + 1]]
-        cost += self.graph[solution[-1]][solution[0]]  # Fechar o ciclo
+        cost = np.sum(self.graph[solution[:-1], solution[1:]]
+                      ) + self.graph[solution[-1], solution[0]]
         return cost
 
     def k_opt(self, solution, k):
@@ -107,18 +101,12 @@ class K_Opt:
         """
         best_solution = solution.copy()
         best_cost = self.calculate_cost(solution)
-        improved = True
 
-        while improved:
-            improved = False
-            for move in self.generate_k_opt_moves(solution, k):
-                for new_solution in self.reconnect_edges(solution, move, k):
-                    new_cost = self.calculate_cost(new_solution)
-                    if new_cost < best_cost:
-                        best_solution = new_solution
-                        best_cost = new_cost
-                        improved = True
-
-            solution = best_solution
+        for move in self.generate_k_opt_moves(solution, k):
+            for new_solution in self.reconnect_edges(solution, move, k):
+                new_cost = self.calculate_cost(new_solution)
+                if new_cost < best_cost:
+                    best_solution = new_solution
+                    best_cost = new_cost
 
         return best_solution, best_cost

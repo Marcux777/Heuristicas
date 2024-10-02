@@ -1,3 +1,0 @@
-
-class Tabu_Search():
-    

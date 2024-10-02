@@ -40,7 +40,7 @@ def run_aco(graph, num_ants, alpha, beta, rho, start_city, max_iterations):
 
 
 if __name__ == "__main__":
-    pasta = "EntradasTSP\\"
+    pasta = "EntradasTSP/"
     lista_arquivos = [
         "Djibouti.txt",
         "Qatar.txt",
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     n, x, y = read_archive(pasta + lista_arquivos[0])
     graph = calculate_Weights(x, y)
 
-    num_ants = 100
+    num_ants = 30
     alpha = 0.8
     beta = 0.8
     rho = 0.9
