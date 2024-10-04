@@ -157,8 +157,7 @@ class GGA:
 
 
 def create_data(arquivo):
-    caminho = f"/workspaces/Heuristicas/Heuristicas/BPP/BPPInstances/E_120_N_40_60/{
-        arquivo}"
+    caminho = f"/workspaces/Heuristicas/Heuristicas/BPP/BPPInstances/E_120_N_40_60/{arquivo}"
     with open(caminho, "r") as file:
         lines = file.read().splitlines()
 
@@ -175,7 +174,7 @@ def create_data(arquivo):
 data = create_data("E_120_N_40_60_BF0000.bpp")
 
 start_time = time.time()
-gga = GGA(data, population_size=100, generations=200, mutation_rate=0.1)
+gga = GGA(data, population_size=1000, generations=2000, mutation_rate=0.1)
 gga.run()
 end_time = time.time()
 solution = gga.best
