@@ -3,7 +3,8 @@ import time
 
 
 def create_data(Arquivo):
-    caminho = f"C:\\Users\\20211002801130\\Documents\\GitHub\\Heuristicas\\BPP\\BPP Instances\\E_120_N_40_60\\{Arquivo}"
+    caminho = f"/workspaces/Heuristicas/Heuristicas/BPP/BPPInstances/E_120_N_40_60/{
+        Arquivo}"
 
     def read_instance(arquivo):
         with open(arquivo, "r") as file:
