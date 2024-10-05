@@ -27,15 +27,20 @@ def create_data(Arquivo):
 
 start_time = t.time()
 
-data = create_data("E_250_N_40_60/E_250_N_40_60_BF0000.bpp")
+data = create_data("Scholl/Scholl_1/N4C3W4_T.txt")
 
 gga = GGA(data)
 best_solution = gga.run()
 
 end_time = t.time()
 
-print("Melhor solução encontrada:")
-for container in best_solution:
-    print(container)
+print("\nMelhor solução encontrada na Grouping Genetic Algorithm:")
+print("=" * 100)
+for i, container in enumerate(best_solution, 1):
+    print(f"Contêiner {i}: {container}")
+print("=" * 100)
 
+print("Quantidade de Contêiners usados: ", len(best_solution))
+print("="*100)
 print("Tempo de solução: {:.2f} segundos".format(end_time - start_time))
+print("="*100)
