@@ -3,21 +3,25 @@ from Container import Container
 
 
 class GGA:
-    def __init__(self, 
-                 elements, 
-                 container_capacity, 
-                 num_generations=100, 
-                 population_size=20, 
-                 stagnation_limit=50, 
-                 tournament_size=3):
-        
-        self.elements = elements
-        self.container_capacity = container_capacity
-        self.num_generations = num_generations
-        self.population_size = population_size
-        self.stagnation_limit = stagnation_limit
-        self.population = []
-        self.tournament_size = tournament_size
+    def __init__(self, elements):
+        """
+        Initializes the genetic algorithm parameters for the bin packing problem.
+
+        Args:
+            elements (dict): A dictionary containing the following keys:
+                - 'weights' (list): A list of item weights.
+                - 'bin_capacity' (int): The capacity of each bin.
+                - 'num_generations' (int): The number of generations to run the algorithm. Default is 100.
+                - 'population_size' (int): The size of the population. Default is 20.
+                - 'stagnation_limit' (int): The number of generations with no improvement before stopping. Default is 50.
+                - 'tournament_size' (int): The number of individuals to participate in tournament selection. Default is 3.
+        """
+        self.elements = elements.get('weights', [])
+        self.container_capacity = elements.get('bin_capacity', 0)
+        self.num_generations = elements.get('num_generations', 100)
+        self.population_size = elements.get('population_size', 20)
+        self.stagnation_limit = elements.get('stagnation_limit', 50)
+        self.tournament_size = elements.get('tournament_size', 3)
 
     # Gera uma solução inicial
     def generate_initial_solution(self):
@@ -79,18 +83,10 @@ class GGA:
 
     # Função auxiliar para redistribuir os elementos em contêineres
     def pack_elements(self, elements):
-        containers = []
-        for element in elements:
-            placed = False
-            for container in containers:
-                if container.remaining_space() >= element:
-                    container.add_element(element)
-                    placed = True
-                    break
-            if not placed:
-                new_container = Container(self.container_capacity)
-                new_container.add_element(element)
-                containers.append(new_container)
+        original_elements = self.elements
+        self.elements = elements
+        containers = self.generate_initial_solution()
+        self.elements = original_elements
         return containers
 
     # Função principal que executa o algoritmo genético
@@ -118,8 +114,10 @@ class GGA:
 
             new_population = []
             for _ in range(self.population_size // 2):
-                parent1 = self.tournament_selection(self.population, fitnesses, tournament_size=self.tournament_size)
-                parent2 = self.tournament_selection(self.population, fitnesses, tournament_size=self.tournament_size)
+                parent1 = self.tournament_selection(
+                    self.population, fitnesses, tournament_size=self.tournament_size)
+                parent2 = self.tournament_selection(
+                    self.population, fitnesses, tournament_size=self.tournament_size)
 
                 child1, child2 = self.crossover(parent1, parent2)
                 child1 = self.mutate(child1)
@@ -134,36 +132,3 @@ class GGA:
         best_solution = max(self.population, key=self.fitness)
         print(f"Melhor fitness obtido: {best_fitness}")
         return best_solution
-
-
-def create_data(Arquivo):
-    caminho = f"/workspaces/Heuristicas/Heuristicas/BPP/BPPInstances/E_120_N_40_60/{
-        Arquivo}"
-
-    def read_instance(arquivo):
-        with open(arquivo, "r") as file:
-            lines = file.read()
-
-        return lines
-
-    itens = list(map(int, filter(None, read_instance(caminho).split("\n"))))
-    print(itens)
-    tam, bin_size = itens[0], itens[1]
-    itens.pop(0), itens.pop(0)
-    data = {
-        "weights": itens,
-        "items": list(range(len(itens))),
-        "bins": list(range(len(itens))),
-        "bin_capacity": bin_size,
-    }
-    return data
-
-
-data = create_data("E_120_N_40_60_BF0000.bpp")
-
-gga = GGA(data['weights'], data['bin_capacity'])
-best_solution = gga.run()
-
-print("Melhor solução encontrada:")
-for container in best_solution:
-    print(container)
