@@ -1,11 +1,7 @@
 import random
 from Container import Container
-
-
-""" Todo
-- Controle de Diversidade (Diversificação)
-- Elitismo
-"""
+from Tabu_Search import Tabu_Search
+import optuna
 
 
 class GGA:
@@ -23,6 +19,9 @@ class GGA:
                 - 'tournament_size' (int): The number of individuals to participate in tournament selection. Default is 3.
                 - 'mutation_rate' (float): The probability of mutation. Default is 0.1.
                 - 'elite_rating' (float): The percentage of the population to be considered elite. Default is 0.1.
+                - 'tabu_max_iterations' (int): Maximum number of iterations for Tabu Search. Default is 30.
+                - 'tabu_tenure' (int): Number of iterations a move remains in the tabu list. Default is 5.
+                - 'tabu_max_neighbors' (int): Maximum number of neighbors to consider in each iteration. Default is 20.
         """
         self.elements = elements.get('weights', [])
         self.container_capacity = elements.get('bin_capacity', 0)
@@ -32,6 +31,11 @@ class GGA:
         self.tournament_size = elements.get('tournament_size', 3)
         self.mutation_rate = elements.get('mutation_rate', 0.1)
         self.elite_rating = elements.get('elite_rating', 0.1)
+
+        # Parâmetros da Tabu Search
+        self.tabu_max_iterations = elements.get('tabu_max_iterations', 30)
+        self.tabu_tenure = elements.get('tabu_tenure', 5)
+        self.tabu_max_neighbors = elements.get('tabu_max_neighbors', 20)
 
     # Gera uma solução inicial
     def generate_initial_solution(self):
@@ -74,15 +78,38 @@ class GGA:
     def stoic_tournament_selection(self, population, fitnesses, tournament_size):
         selected = random.sample(
             list(zip(population, fitnesses)), tournament_size)
-        selected.sort(key=lambda x: x[1], reverse=True)
-
-        # Probabilidade de selecionar o melhor, mas com chance de selecionar outro
-        if random.random() < 0.75:  # 75% de chance de selecionar o melhor
-            return selected[0][0]
+        # Seleciona o melhor indivíduo sem ordenar a lista inteira
+        best_individual = max(selected, key=lambda x: x[1])
+        if random.random() < 0.75:
+            return best_individual[0]
         else:
             return random.choice(selected)[0]
 
+    def roulette_wheel_selection(self, population, fitnesses):
+
+        # Inverter os valores de fitness se menor fitness for melhor
+        # Neste caso, parece que um valor de fitness menor é melhor
+        max_fitness = max(fitnesses)
+        adjusted_fitnesses = [max_fitness - f +
+                              1 for f in fitnesses]  # +1 para evitar zero
+
+        total_fitness = sum(adjusted_fitnesses)
+        probabilities = [f / total_fitness for f in adjusted_fitnesses]
+
+        # Gerar um número aleatório entre 0 e 1
+        r = random.random()
+        cumulative_probability = 0.0
+
+        for individual, probability in zip(population, probabilities):
+            cumulative_probability += probability
+            if cumulative_probability >= r:
+                return individual
+
+        # Retorna o último indivíduo se nenhuma seleção for feita
+        return population[-1]
+
     # Função de cruzamento divisão unica
+
     def crossover(self, parent1, parent2):
         """
         Perform crossover operation between two parent solutions to generate two offspring.
@@ -121,6 +148,9 @@ class GGA:
             element for conteiner in parent1 for element in conteiner.elements]
         elements2 = [
             element for conteiner in parent2 for element in conteiner.elements]
+
+        if len(elements1) < 2:
+            return parent1, parent2  # Não há pontos suficientes para cruzamento
 
         point1 = random.randint(1, len(elements1) - 2)
         point2 = random.randint(point1 + 1, len(elements1) - 1)
@@ -200,11 +230,19 @@ class GGA:
         elite = sorted(self.population, key=self.fitness)[:elite_size]
         new_population = elite.copy()  # Garantir que a elite passe para a próxima geração
 
+        TS = Tabu_Search(self, max_iterations=self.tabu_max_iterations,
+                         tabu_tenure=self.tabu_tenure, max_neighbors=self.tabu_max_neighbors)
+        improved_elite = []
+        for individual in elite:
+            improved_individual = TS.search(individual)
+            improved_elite.append(improved_individual)
+        new_population = improved_elite.copy()
+
         while len(new_population) < self.population_size:
-            parent1 = self.stoic_tournament_selection(
-                self.population, fitnesses, tournament_size=self.tournament_size)
-            parent2 = self.stoic_tournament_selection(
-                self.population, fitnesses, tournament_size=self.tournament_size)
+            parent1 = self.roulette_wheel_selection(
+                self.population, fitnesses)
+            parent2 = self.roulette_wheel_selection(
+                self.population, fitnesses)
 
             child1, child2 = self.crossover_multipoint(parent1, parent2)
             child1 = self.mutate(child1, self.mutation_rate)
@@ -215,3 +253,37 @@ class GGA:
                 new_population.append(child2)
 
         return new_population
+
+# Função objetivo para o Optuna
+
+
+def objective(trial):
+    # Hiperparâmetros a serem otimizados
+    hyperparameters = {
+        'num_generations': trial.suggest_int('num_generations', 50, 200),
+        'population_size': trial.suggest_int('population_size', 10, 100),
+        'mutation_rate': trial.suggest_float('mutation_rate', 0.01, 0.5),
+        'elite_rating': trial.suggest_float('elite_rating', 0.01, 0.5),
+        'tabu_max_iterations': trial.suggest_int('tabu_max_iterations', 10, 100),
+        'tabu_tenure': trial.suggest_int('tabu_tenure', 1, 20),
+        'tabu_max_neighbors': trial.suggest_int('tabu_max_neighbors', 5, 50),
+        'weights': [random.randint(1, 100) for _ in range(50)],
+        'bin_capacity': 150
+    }
+
+    # Inicializar e executar o GGA
+    gga = GGA(hyperparameters)
+
+    best_solution = gga.run()
+    best_fitness = gga.fitness(best_solution)
+
+    # O Optuna minimiza por padrão, então fitness negativo pode ser necessário se maior for melhor
+    return best_fitness
+
+
+# Alterar para "maximize" se necessário
+study = optuna.create_study(direction="minimize")
+study.optimize(objective, n_trials=100)
+
+# Exibir os melhores hiperparâmetros
+print("Melhores hiperparâmetros encontrados:", study.best_params)

@@ -25,3 +25,9 @@ class Container:
 
     def __repr__(self):
         return f"Container({self.elements}, usado: {self.used}/{self.capacity})"
+
+    def copy(self):
+        new_container = Container(self.capacity)
+        new_container.elements = self.elements.copy()
+        new_container.used = self.used
+        return new_container
