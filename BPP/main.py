@@ -1,6 +1,6 @@
 from GGA import GGA
 import time as t
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 
 def create_data(Arquivo):
@@ -24,39 +24,40 @@ def create_data(Arquivo):
 
 
 def process_instance(Arquivo):
+    start_time = t.time()
     data = create_data(Arquivo)
     gga = GGA(data)
     best_solution = gga.run()
-    return best_solution
+    end_time = t.time()
+    # Retornar também o nome do arquivo
+    return Arquivo, best_solution, end_time - start_time
 
 
-if __name__ == "__main__":
-    start_time = t.time()
-
+def main():
+    # Lista de arquivos a serem processados
     # Adicione mais arquivos conforme necessário
-    arquivos = ["E_120_N_40_60/E_120_N_40_60_BF0000.bpp",
-                "E_250_U_20_100/E_250_U_20_100_BF0000.bpp",
-                "Randomly_Generated/BPP_1000_1000_0.2_0.8_9.txt"]
+    arquivos = ["E_120_N_40_60/E_120_N_40_60_BF0000.bpp"]
 
-    with ThreadPoolExecutor() as executor:
-        futures = {executor.submit(
-            process_instance, arquivo): arquivo for arquivo in arquivos}
+    with ProcessPoolExecutor() as executor:
+        futures = [executor.submit(process_instance, arquivo)
+                   for arquivo in arquivos]
 
         for future in as_completed(futures):
-            arquivo = futures[future]
             try:
-                best_solution = future.result()
+                arquivo, best_solution, execute_time = future.result()
                 print(f"\nMelhor solução encontrada para {arquivo}:")
                 print("=" * 100)
                 for i, container in enumerate(best_solution, 1):
                     print(f"Contêiner {i}: {container}")
                 print("=" * 100)
-                print("Quantidade de Contêiners usados: ", len(best_solution))
+                print("Quantidade de contêineres usados: ", len(best_solution))
+                print("=" * 100)
+                print("Tempo total de solução: {:.2f} segundos".format(
+                    execute_time))
                 print("=" * 100)
             except Exception as exc:
                 print(f"{arquivo} gerou uma exceção: {exc}")
 
-    end_time = t.time()
-    print("Tempo total de solução: {:.2f} segundos".format(
-        end_time - start_time))
-    print("=" * 100)
+
+if __name__ == "__main__":
+    main()

@@ -1,3 +1,7 @@
+## GGA
+
+Durante a implementação da GGA
+
 ### **1. Operadores de Seleção:**
 
 - [x] **Seleção por Roleta (Roulette Wheel Selection):**
@@ -91,31 +95,3 @@ Determinano quais indivíduos permanecerão na população após a criação dos
   - Pode incorporar técnicas como busca local ou tabu search para melhorar soluções específicas.
 
 ---
-
-### **6. Operadores Específicos ao Problema:**
-
-- **Operadores Customizados:**
-  - Desenvolvidos para aproveitar características específicas do problema em questão.
-  - Para o problema de bin packing, por exemplo, podem ser utilizados operadores que rearranjam itens entre contêineres de maneira eficiente, respeitando as restrições de capacidade.
-
----
-
-### **Resumo e Aplicação:**
-
-No desenvolvimento de um algoritmo genético eficaz, é comum combinar vários desses operadores para equilibrar a **exploração** (busca de novas áreas no espaço de soluções) e a **exploração** (refinamento de soluções já promissoras). A escolha dos operadores e seus parâmetros (como taxas de mutação e cruzamento) deve ser adaptada ao problema específico e pode exigir experimentação para alcançar os melhores resultados.
-
-**Exemplo na Prática:**
-
-Para o seu problema de bin packing, os seguintes operadores podem ser especialmente relevantes:
-
-- **Seleção por Torneio:** Simples e eficaz para selecionar bons candidatos à reprodução.
-- **Cruzamento de Múltiplos Pontos:** Permite combinar partes dos pais de maneira mais diversificada.
-- **Mutação de Troca:** Pode ajudar a encontrar arranjos mais eficientes de itens nos contêineres.
-- **Elitismo:** Assegura que as melhores soluções não sejam perdidas entre gerações.
-- **Tabu Search como Intensificação:** Já que você está integrando tabu search, ele atua como um operador de intensificação, melhorando soluções específicas.
-
----
-
-**Conclusão:**
-
-Compreender e escolher os operadores adequados é fundamental para o sucesso de um algoritmo genético. Eles devem ser selecionados com base nas características do problema e nos objetivos específicos da otimização. Experimente diferentes combinações e ajuste os parâmetros para encontrar a configuração que proporciona os melhores resultados para o seu caso de uso.

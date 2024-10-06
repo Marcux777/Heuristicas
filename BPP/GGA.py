@@ -1,10 +1,12 @@
 import random
+from copy import deepcopy
 from Container import Container
 from Tabu_Search import Tabu_Search
 import optuna
 
 
 class GGA:
+
     def __init__(self, elements):
         """
         Initializes the genetic algorithm parameters for the bin packing problem.
@@ -25,17 +27,17 @@ class GGA:
         """
         self.elements = elements.get('weights', [])
         self.container_capacity = elements.get('bin_capacity', 0)
-        self.num_generations = elements.get('num_generations', 100)
-        self.population_size = elements.get('population_size', 20)
+        self.num_generations = elements.get('num_generations', 165)
+        self.population_size = elements.get('population_size', 65)
         self.stagnation_limit = elements.get('stagnation_limit', 50)
         self.tournament_size = elements.get('tournament_size', 3)
-        self.mutation_rate = elements.get('mutation_rate', 0.1)
-        self.elite_rating = elements.get('elite_rating', 0.1)
+        self.mutation_rate = elements.get('mutation_rate', 0.2683891676635783)
+        self.elite_rating = elements.get('elite_rating', 0.10116734035019169)
 
         # Parâmetros da Tabu Search
         self.tabu_max_iterations = elements.get('tabu_max_iterations', 30)
-        self.tabu_tenure = elements.get('tabu_tenure', 5)
-        self.tabu_max_neighbors = elements.get('tabu_max_neighbors', 20)
+        self.tabu_tenure = elements.get('tabu_tenure', 20)
+        self.tabu_max_neighbors = elements.get('tabu_max_neighbors', 29)
 
     # Gera uma solução inicial
     def generate_initial_solution(self):
@@ -66,6 +68,8 @@ class GGA:
         total_waste = sum(container.remaining_space()
                           for container in solution)
         return len(solution) + (total_waste / self.container_capacity)
+
+# -------------------------------- Metodos de Seleção -------------------------------- #
 
     # Seleção por torneio
 
@@ -108,9 +112,11 @@ class GGA:
         # Retorna o último indivíduo se nenhuma seleção for feita
         return population[-1]
 
+# -------------------------------- Metodos de Cruzamento -------------------------------- #
+
     # Função de cruzamento divisão unica
 
-    def crossover(self, parent1, parent2):
+    def single_point_crossover(self, parent1, parent2):
         """
         Perform crossover operation between two parent solutions to generate two offspring.
 
@@ -143,7 +149,7 @@ class GGA:
         return child1, child2
 
     # Função de cruzamento divisão Multi-Pontos
-    def crossover_multipoint(self, parent1, parent2):
+    def multi_point_crossover(self, parent1, parent2):
         elements1 = [
             element for conteiner in parent1 for element in conteiner.elements]
         elements2 = [
@@ -165,25 +171,107 @@ class GGA:
 
         return child1, child2
 
-    # Função de mutação (muda um elemento de um contêiner para outro)
+# -------------------------------- Metodo de Mutações -------------------------------- #
+
+    # Função de mutação
     def mutate(self, solution, mutation_rate):
         if random.random() < mutation_rate:
-            self._mutate_solution(solution)
+            self._inversion_mutation(solution)
             solution = self._remove_empty_containers(solution)
         return solution
 
-    def _mutate_solution(self, solution):
-        if len(solution) > 1:
-            container1, container2 = random.sample(solution, 2)
-            if container1.elements:
-                element = random.choice(container1.elements)
-                if container2.remaining_space() >= element:
-                    container1.remove_element(element)
-                    container2.add_element(element)
+    # Funções para as Mutações
+    def _swap_mutation(self, solution):
+        """
+        Realiza a mutação de troca entre dois elementos de contêineres diferentes.
+
+        Args:
+            solution (list): Lista de contêineres representando a solução atual.
+
+        Returns:
+            list: Solução mutada com dois elementos trocados entre contêineres.
+        """
+        # Cria uma cópia profunda da solução para evitar modificações in-place
+        mutated_solution = [container.copy() for container in solution]
+
+        # Filtra os contêineres que possuem pelo menos um elemento
+        eligible_containers = [c for c in mutated_solution if c.elements]
+        if len(eligible_containers) < 2:
+            # Não há contêineres suficientes para realizar uma troca
+            return mutated_solution
+
+        # Seleciona aleatoriamente dois contêineres distintos
+        container1, container2 = random.sample(eligible_containers, 2)
+
+        # Seleciona um elemento aleatório de cada contêiner
+        element1 = random.choice(container1.elements)
+        element2 = random.choice(container2.elements)
+
+        # Verifica se a troca é viável para ambos os contêineres
+        can_swap = (
+            container1.remaining_space() + element1 - element2 >= 0 and
+            container2.remaining_space() + element2 - element1 >= 0
+        )
+
+        if can_swap:
+            # Realiza a troca de elementos entre os contêineres
+            container1.remove_element(element1)
+            container2.remove_element(element2)
+            container1.add_element(element2)
+            container2.add_element(element1)
+            # Atualiza o espaço utilizado nos contêineres
+            container1.used = sum(container1.elements)
+            container2.used = sum(container2.elements)
+
+        return mutated_solution
+
+    def _inversion_mutation(self, solution):
+        """
+        Realiza a mutação de inversão em uma solução.
+        
+        Args:
+            solution (list): Lista de contêineres representando a solução atual.
+        
+        Returns:
+            list: Solução mutada com uma subsequência de itens invertida em um contêiner.
+        """
+        # Cria uma cópia superficial dos contêineres com cópias internas
+        mutated_solution = [container.copy() for container in solution]
+        
+        # Filtra contêineres que possuem pelo menos dois itens
+        eligible_containers = [c for c in mutated_solution if len(c.elements) >= 2]
+        if not eligible_containers:
+            # Não há contêineres elegíveis para mutação de inversão
+            return mutated_solution
+        
+        # Seleciona aleatoriamente um contêiner elegível
+        container = random.choice(eligible_containers)
+        
+        # Seleciona dois índices para definir a subsequência a ser invertida
+        idx1, idx2 = sorted(random.sample(range(len(container.elements)), 2))
+        
+        # Inverte a subsequência de itens entre idx1 e idx2
+        container.elements[idx1:idx2] = container.elements[idx1:idx2][::-1]
+        
+        # Atualiza o espaço usado no contêiner
+        container.used = sum(container.elements)
+        
+        return mutated_solution
+
+    def insertion_Mutation(self, solution):
+        return None
+
+    def scramble_Mutation(self, solution):
+        return None
+
+    def gausian_Mutatuon(self, solution):
+        return None
+
+# -------------------------------- Metodos Auxiliares -------------------------------- #
 
     def _remove_empty_containers(self, solution):
         return [container for container in solution if container.elements]
-
+    
     # Função auxiliar para redistribuir os elementos em contêineres
     def pack_elements(self, elements):
         original_elements = self.elements
@@ -244,7 +332,7 @@ class GGA:
             parent2 = self.roulette_wheel_selection(
                 self.population, fitnesses)
 
-            child1, child2 = self.crossover_multipoint(parent1, parent2)
+            child1, child2 = self.multi_point_crossover(parent1, parent2)
             child1 = self.mutate(child1, self.mutation_rate)
             child2 = self.mutate(child2, self.mutation_rate)
 
@@ -254,36 +342,35 @@ class GGA:
 
         return new_population
 
-# Função objetivo para o Optuna
+    # Função para otimização dos hiperparametross
+    def call_optuna(self):
+        def objective(trial):
+            # Hiperparâmetros a serem otimizados
+            hyperparameters = {
+                'num_generations': trial.suggest_int('num_generations', 50, 200),
+                'population_size': trial.suggest_int('population_size', 10, 100),
+                'mutation_rate': trial.suggest_float('mutation_rate', 0.01, 0.5),
+                'elite_rating': trial.suggest_float('elite_rating', 0.01, 0.5),
+                'tabu_max_iterations': trial.suggest_int('tabu_max_iterations', 10, 100),
+                'tabu_tenure': trial.suggest_int('tabu_tenure', 1, 20),
+                'tabu_max_neighbors': trial.suggest_int('tabu_max_neighbors', 5, 50),
+                'weights': [random.randint(1, 100) for _ in range(50)],
+                'bin_capacity': 150
+            }
 
+            # Inicializar e executar o GGA
+            gga = GGA(hyperparameters)
 
-def objective(trial):
-    # Hiperparâmetros a serem otimizados
-    hyperparameters = {
-        'num_generations': trial.suggest_int('num_generations', 50, 200),
-        'population_size': trial.suggest_int('population_size', 10, 100),
-        'mutation_rate': trial.suggest_float('mutation_rate', 0.01, 0.5),
-        'elite_rating': trial.suggest_float('elite_rating', 0.01, 0.5),
-        'tabu_max_iterations': trial.suggest_int('tabu_max_iterations', 10, 100),
-        'tabu_tenure': trial.suggest_int('tabu_tenure', 1, 20),
-        'tabu_max_neighbors': trial.suggest_int('tabu_max_neighbors', 5, 50),
-        'weights': [random.randint(1, 100) for _ in range(50)],
-        'bin_capacity': 150
-    }
+            best_solution = gga.run()
+            best_fitness = gga.fitness(best_solution)
 
-    # Inicializar e executar o GGA
-    gga = GGA(hyperparameters)
+            # O Optuna minimiza por padrão, então fitness negativo pode ser necessário se maior for melhor
+            return best_fitness
 
-    best_solution = gga.run()
-    best_fitness = gga.fitness(best_solution)
+        # Alterar para "maximize" se necessário
+        study = optuna.create_study(direction="minimize")
+        study.optimize(objective, n_trials=20)
 
-    # O Optuna minimiza por padrão, então fitness negativo pode ser necessário se maior for melhor
-    return best_fitness
-
-
-# Alterar para "maximize" se necessário
-study = optuna.create_study(direction="minimize")
-study.optimize(objective, n_trials=100)
-
-# Exibir os melhores hiperparâmetros
-print("Melhores hiperparâmetros encontrados:", study.best_params)
+        # Exibir os melhores hiperparâmetros
+        print("Melhores hiperparâmetros encontrados:", study.best_params)
+        return study.best_params
