@@ -3,6 +3,7 @@ from copy import deepcopy
 from Container import Container
 from Tabu_Search import Tabu_Search
 import optuna
+import numpy as np
 
 
 class GGA:
@@ -171,17 +172,74 @@ class GGA:
 
         return child1, child2
 
+    def pmx_crossover(self, parent1, parent2):
+        """
+        Implementa o cruzamento PMX (Partially Matched Crossover) adaptado para o GGA.
+        Realiza o cruzamento entre dois pais e garante que os itens não sejam duplicados nos filhos.
+        """
+
+        # Coleta todos os itens dos dois pais
+        elements1 = [
+            element for container in parent1 for element in container.elements]
+        elements2 = [
+            element for container in parent2 for element in container.elements]
+
+        # Verifica se ambos os pais têm o mesmo número de elementos
+        if len(elements1) != len(elements2):
+            raise ValueError(
+                "Os pais devem conter o mesmo número de elementos.")
+
+        # Escolhe dois pontos de cruzamento
+        point1, point2 = sorted(random.sample(range(len(elements1)), 2))
+
+        # Inicializa os filhos como cópias dos pais
+        child1_elements = elements1[:]
+        child2_elements = elements2[:]
+
+        # Troca os segmentos entre os dois pais
+        child1_elements[point1:point2], child2_elements[point1:
+                                                        point2] = elements2[point1:point2], elements1[point1:point2]
+
+        # Mapeamento das trocas entre as subsequências para ambos os filhos
+        mapping_1_to_2 = {elements1[i]: elements2[i]
+                          for i in range(point1, point2)}
+        mapping_2_to_1 = {elements2[i]: elements1[i]
+                          for i in range(point1, point2)}
+
+        # Corrige as colisões em ambos os filhos com os mapeamentos
+        self._pmx_fix_collisions(
+            child1_elements, mapping_1_to_2, point1, point2)
+        self._pmx_fix_collisions(
+            child2_elements, mapping_2_to_1, point1, point2)
+
+        # Reorganiza os itens para criar os filhos a partir dos elementos ajustados
+        child1 = self.pack_elements(child1_elements)
+        child2 = self.pack_elements(child2_elements)
+
+        return child1, child2
+
+    def uniform_crossover(self, parent1, parent2):
+        return None
+
+    def arithmetic_Crossover(self, parent1, parent2):
+        return None
+
+    def order_Crossover(self, parent1, parent2):
+        return None
+
+    def cicly_Crossover(self, parent1, parent2):
+        return None
 # -------------------------------- Metodo de Mutações -------------------------------- #
 
     # Função de mutação
     def mutate(self, solution, mutation_rate):
         if random.random() < mutation_rate:
-            self._inversion_mutation(solution)
+            self._inversion_Mutation(solution)
             solution = self._remove_empty_containers(solution)
         return solution
 
     # Funções para as Mutações
-    def _swap_mutation(self, solution):
+    def _swap_Mutation(self, solution):
         """
         Realiza a mutação de troca entre dois elementos de contêineres diferentes.
 
@@ -225,53 +283,193 @@ class GGA:
 
         return mutated_solution
 
-    def _inversion_mutation(self, solution):
+    def _inversion_Mutation(self, solution):
         """
         Realiza a mutação de inversão em uma solução.
-        
+
         Args:
             solution (list): Lista de contêineres representando a solução atual.
-        
+
         Returns:
             list: Solução mutada com uma subsequência de itens invertida em um contêiner.
         """
         # Cria uma cópia superficial dos contêineres com cópias internas
         mutated_solution = [container.copy() for container in solution]
-        
+
         # Filtra contêineres que possuem pelo menos dois itens
-        eligible_containers = [c for c in mutated_solution if len(c.elements) >= 2]
+        eligible_containers = [
+            c for c in mutated_solution if len(c.elements) >= 2]
         if not eligible_containers:
             # Não há contêineres elegíveis para mutação de inversão
             return mutated_solution
-        
+
         # Seleciona aleatoriamente um contêiner elegível
         container = random.choice(eligible_containers)
-        
+
         # Seleciona dois índices para definir a subsequência a ser invertida
         idx1, idx2 = sorted(random.sample(range(len(container.elements)), 2))
-        
+
         # Inverte a subsequência de itens entre idx1 e idx2
         container.elements[idx1:idx2] = container.elements[idx1:idx2][::-1]
-        
+
         # Atualiza o espaço usado no contêiner
         container.used = sum(container.elements)
-        
+
         return mutated_solution
 
-    def insertion_Mutation(self, solution):
-        return None
+    def _insertion_Mutation(self, solution):
+        """
+        Perform an insertion mutation on the given solution.
 
-    def scramble_Mutation(self, solution):
-        return None
+        This method creates a deep copy of the provided solution to avoid in-place modifications.
+        It randomly selects two different containers from the solution. If the first container
+        has elements, it randomly selects an element from it, removes the element, and attempts
+        to insert it into the second container. If the second container does not have enough space
+        for the element, a new container is created and the element is added to it.
 
-    def gausian_Mutatuon(self, solution):
-        return None
+        Args:
+            solution (list): A list of containers representing the current solution.
+
+        Returns:
+            list: A new list of containers representing the mutated solution.
+        """
+        # Cria uma cópia profunda da solução para evitar modificações in-place
+        mutated_solution = [container.copy() for container in solution]
+
+        # Seleciona aleatoriamente dois contêineres diferentes
+        container1, container2 = random.sample(mutated_solution, 2)
+
+        if container1.elements:
+            # Seleciona um item aleatório do container1
+            element = random.choice(container1.elements)
+            container1.remove_element(element)
+
+            # Se possível, tenta inserir o item em container2
+            if container2.remaining_space() >= element:
+                container2.add_element(element)
+            else:
+                # Se container2 não tiver espaço, crie um novo contêiner
+                new_container = Container(self.container_capacity)
+                new_container.add_element(element)
+                mutated_solution.append(new_container)
+
+        return mutated_solution
+
+    def _scramble_Mutation(self, solution):
+        """
+        Perform a scramble mutation on a given solution.
+
+        This mutation selects a random container with at least two elements,
+        chooses a subsequence within that container, and shuffles the elements
+        in that subsequence.
+
+        Args:
+            solution (list): A list of containers, where each container is an
+                             object with an 'elements' attribute (a list of elements)
+                             and a 'used' attribute (an integer representing the used space).
+
+        Returns:
+            list: A new solution with the mutated container.
+        """
+        mutated_solution = [container.copy() for container in solution]
+
+        # Filtra os contêineres com pelo menos dois elementos
+        eligible_containers = [
+            c for c in mutated_solution if len(c.elements) > 1]
+        if not eligible_containers:
+            return mutated_solution
+
+        # Seleciona um contêiner aleatório
+        container = random.choice(eligible_containers)
+
+        # Seleciona dois índices e embaralha os elementos nessa subsequência
+        idx1, idx2 = sorted(random.sample(range(len(container.elements)), 2))
+        subsequence = container.elements[idx1:idx2]
+        random.shuffle(subsequence)
+        container.elements[idx1:idx2] = subsequence
+
+        # Atualiza o espaço usado no contêiner
+        container.used = sum(container.elements)
+
+        return mutated_solution
+
+    def _gausian_Mutation(self, solution):
+        """
+        Applies a Gaussian mutation to a given solution.
+
+        This method selects a random container and a random item within that container,
+        then applies a Gaussian mutation to the item's weight, simulating small variations.
+        The mutated weight is checked to ensure it fits within the container's remaining space.
+
+        Parameters:
+        solution (list): A list of containers, where each container has a list of elements (weights).
+
+        Returns:
+        list: A new solution with the mutated item weight.
+        """
+        mutated_solution = [container.copy() for container in solution]
+
+        # Seleciona aleatoriamente um contêiner e um item dentro desse contêiner
+        eligible_containers = [c for c in mutated_solution if c.elements]
+        if not eligible_containers:
+            return mutated_solution
+
+        container = random.choice(eligible_containers)
+        element_idx = random.randint(0, len(container.elements) - 1)
+
+        # Aplica uma mutação gaussiana ao item (simulando pequenas variações no peso)
+        original_weight = container.elements[element_idx]
+        mutated_weight = abs(np.random.normal(
+            loc=original_weight, scale=original_weight * 0.1))  # Variação de 10%
+
+        # Verifica se o novo peso cabe no contêiner
+        if container.remaining_space() + container.elements[element_idx] >= mutated_weight:
+            container.elements[element_idx] = mutated_weight
+            # Atualiza o espaço utilizado
+            container.used = sum(container.elements)
+
+        return mutated_solution
+
+    def _bitflip_Mutation(self, solution):
+        """
+        Perform a bit-flip mutation on the given solution.
+
+        This mutation selects two different containers from the solution and attempts to move a random element
+        from the first container to the second container. If the second container does not have enough space
+        for the element, a new container is created and the element is added to it.
+
+        Args:
+            solution (list): A list of containers representing the current solution.
+
+        Returns:
+            list: A new solution with the mutation applied.
+        """
+        mutated_solution = [container.copy() for container in solution]
+
+        # Seleciona aleatoriamente dois contêineres diferentes
+        container1, container2 = random.sample(mutated_solution, 2)
+
+        if container1.elements:
+            # Seleciona um item aleatório do container1
+            element = random.choice(container1.elements)
+            container1.remove_element(element)
+
+            # Se possível, tenta inserir o item em container2
+            if container2.remaining_space() >= element:
+                container2.add_element(element)
+            else:
+                # Se container2 não tiver espaço, crie um novo contêiner
+                new_container = Container(self.container_capacity)
+                new_container.add_element(element)
+                mutated_solution.append(new_container)
+
+        return mutated_solution
 
 # -------------------------------- Metodos Auxiliares -------------------------------- #
 
     def _remove_empty_containers(self, solution):
         return [container for container in solution if container.elements]
-    
+
     # Função auxiliar para redistribuir os elementos em contêineres
     def pack_elements(self, elements):
         original_elements = self.elements
@@ -341,6 +539,25 @@ class GGA:
                 new_population.append(child2)
 
         return new_population
+
+    def _pmx_fix_collisions(self, child_elements, mapping, point1, point2):
+        """
+        Corrige colisões causadas pelo cruzamento PMX, garantindo que cada item apareça apenas uma vez.
+
+        Args:
+            child_elements (list): Os elementos do filho gerado após a troca.
+            parent1_elements (list): Elementos do primeiro pai.
+            parent2_elements (list): Elementos do segundo pai.
+            point1 (int): Primeiro ponto de cruzamento.
+            point2 (int): Segundo ponto de cruzamento.
+        """
+        swapped_elements = set(child_elements[point1:point2])
+
+        # Percorre os elementos fora da faixa de cruzamento
+        for i in list(range(0, point1)) + list(range(point2, len(child_elements))):
+            # Se o elemento estiver em swapped_elements, ele precisa ser corrigido
+            while child_elements[i] in swapped_elements:
+                child_elements[i] = mapping[child_elements[i]]
 
     # Função para otimização dos hiperparametross
     def call_optuna(self):
