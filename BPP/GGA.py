@@ -4,6 +4,7 @@ from Container import Container
 from Tabu_Search import Tabu_Search
 import optuna
 import numpy as np
+import bisect
 
 
 class GGA:
@@ -28,36 +29,51 @@ class GGA:
         """
         self.elements = elements.get('weights', [])
         self.container_capacity = elements.get('bin_capacity', 0)
-        self.num_generations = elements.get('num_generations', 165)
-        self.population_size = elements.get('population_size', 65)
+        self.num_generations = elements.get('num_generations', 121)
+        self.population_size = elements.get('population_size', 69)
         self.stagnation_limit = elements.get('stagnation_limit', 50)
         self.tournament_size = elements.get('tournament_size', 3)
-        self.mutation_rate = elements.get('mutation_rate', 0.2683891676635783)
-        self.elite_rating = elements.get('elite_rating', 0.10116734035019169)
+        self.mutation_rate = elements.get('mutation_rate', 0.34)
+        self.elite_rating = elements.get('elite_rating', 0.16)
 
         # Parâmetros da Tabu Search
-        self.tabu_max_iterations = elements.get('tabu_max_iterations', 30)
-        self.tabu_tenure = elements.get('tabu_tenure', 20)
-        self.tabu_max_neighbors = elements.get('tabu_max_neighbors', 29)
+        self.tabu_max_iterations = elements.get('tabu_max_iterations', 88)
+        self.tabu_tenure = elements.get('tabu_tenure', 17)
+        self.tabu_max_neighbors = elements.get('tabu_max_neighbors', 20)
 
-    # Gera uma solução inicial
-    def generate_initial_solution(self):
+    def generate_initial_solution(self, elements=None):
+        if elements is None:
+            elements = self.elements
+        # Ordenar em ordem decrescente
+        sorted_elements = sorted(elements, reverse=True)
+        # Listas para armazenar os contêineres e seus espaços restantes
         containers = []
-        for element in self.elements:
-            # Tenta adicionar o elemento a um contêiner existente
-            placed = False
-            for container in containers:
-                if container.remaining_space() >= element:
-                    container.add_element(element)
-                    placed = True
-                    break
-
-            # Se não foi possível colocar o elemento em nenhum contêiner, cria um novo
-            if not placed:
+        remaining_spaces = []
+        for element in sorted_elements:
+            # Encontrar o índice do primeiro contêiner que pode acomodar o elemento
+            index = bisect.bisect_left(remaining_spaces, element)
+            if index < len(remaining_spaces):
+                # Contêiner encontrado
+                container = containers[index]
+                container.add_element(element)
+                # Atualizar o espaço restante
+                rem_space = container.remaining_space()
+                # Remover o contêiner e seu espaço das listas
+                del remaining_spaces[index]
+                del containers[index]
+                # Inserir novamente na posição correta para manter a lista ordenada
+                insert_index = bisect.bisect_left(remaining_spaces, rem_space)
+                remaining_spaces.insert(insert_index, rem_space)
+                containers.insert(insert_index, container)
+            else:
+                # Nenhum contêiner adequado encontrado, criar um novo
                 new_container = Container(self.container_capacity)
                 new_container.add_element(element)
-                containers.append(new_container)
-
+                rem_space = new_container.remaining_space()
+                # Inserir o novo contêiner na posição correta
+                insert_index = bisect.bisect_left(remaining_spaces, rem_space)
+                remaining_spaces.insert(insert_index, rem_space)
+                containers.insert(insert_index, new_container)
         return containers
 
     def fitness(self, solution):
@@ -70,52 +86,52 @@ class GGA:
                           for container in solution)
         return len(solution) + (total_waste / self.container_capacity)
 
+
 # -------------------------------- Metodos de Seleção -------------------------------- #
 
     # Seleção por torneio
 
-    def tournament_selection(self, population, fitnesses, tournament_size):
+    def tournament_selection(self, population, fitnesses, tournament_size=3):
         selected = random.sample(
             list(zip(population, fitnesses)), tournament_size)
-        selected.sort(key=lambda x: x[1], reverse=True)
+        selected.sort(key=lambda x: x[1])  # Ordenar em ordem crescente
         return selected[0][0]
 
-    def stoic_tournament_selection(self, population, fitnesses, tournament_size):
+    def stoic_tournament_selection(self, population, fitnesses, tournament_size=3):
         selected = random.sample(
             list(zip(population, fitnesses)), tournament_size)
-        # Seleciona o melhor indivíduo sem ordenar a lista inteira
-        best_individual = max(selected, key=lambda x: x[1])
+        # Selecionar o mínimo
+        best_individual = min(selected, key=lambda x: x[1])
         if random.random() < 0.75:
             return best_individual[0]
         else:
             return random.choice(selected)[0]
 
     def roulette_wheel_selection(self, population, fitnesses):
+        # Converter fitnesses para um array NumPy
+        fitnesses = np.array(fitnesses)
 
-        # Inverter os valores de fitness se menor fitness for melhor
-        # Neste caso, parece que um valor de fitness menor é melhor
-        max_fitness = max(fitnesses)
-        adjusted_fitnesses = [max_fitness - f +
-                              1 for f in fitnesses]  # +1 para evitar zero
+        # Inverter os fitnesses para que menores valores tenham maiores probabilidades
+        max_fitness = fitnesses.max()
+        adjusted_fitnesses = max_fitness - fitnesses + 1  # +1 para evitar zeros
 
-        total_fitness = sum(adjusted_fitnesses)
-        probabilities = [f / total_fitness for f in adjusted_fitnesses]
+        # Calcular as probabilidades normalizadas
+        total_fitness = adjusted_fitnesses.sum()
+        probabilities = adjusted_fitnesses / total_fitness
 
-        # Gerar um número aleatório entre 0 e 1
-        r = random.random()
-        cumulative_probability = 0.0
+        # Calcular as probabilidades cumulativas
+        cumulative_probabilities = np.cumsum(probabilities)
 
-        for individual, probability in zip(population, probabilities):
-            cumulative_probability += probability
-            if cumulative_probability >= r:
-                return individual
+        # Gerar um número aleatório e encontrar o indivíduo correspondente
+        r = np.random.rand()
+        index = np.searchsorted(cumulative_probabilities, r)
+        return population[index]
 
-        # Retorna o último indivíduo se nenhuma seleção for feita
-        return population[-1]
 
 # -------------------------------- Metodos de Cruzamento -------------------------------- #
 
     # Função de cruzamento divisão unica
+
 
     def single_point_crossover(self, parent1, parent2):
         """
@@ -152,21 +168,23 @@ class GGA:
     # Função de cruzamento divisão Multi-Pontos
     def multi_point_crossover(self, parent1, parent2):
         elements1 = [
-            element for conteiner in parent1 for element in conteiner.elements]
+            element for container in parent1 for element in container.elements]
         elements2 = [
-            element for conteiner in parent2 for element in conteiner.elements]
+            element for container in parent2 for element in container.elements]
 
         if len(elements1) < 2:
             return parent1, parent2  # Não há pontos suficientes para cruzamento
 
-        point1 = random.randint(1, len(elements1) - 2)
-        point2 = random.randint(point1 + 1, len(elements1) - 1)
+        # Escolhe dois pontos de cruzamento e garante que point1 seja menor que point2
+        point1, point2 = sorted(random.sample(range(1, len(elements1)), 2))
 
+        # Constrói os filhos alternando as subseções entre os pais
         child1_elements = elements1[:point1] + \
             elements2[point1:point2] + elements1[point2:]
         child2_elements = elements2[:point1] + \
             elements1[point1:point2] + elements2[point2:]
 
+        # Gera dois filhos redistribuindo os elementos entre os contêineres
         child1 = self.pack_elements(child1_elements)
         child2 = self.pack_elements(child2_elements)
 
@@ -234,153 +252,140 @@ class GGA:
     # Função de mutação
     def mutate(self, solution, mutation_rate):
         if random.random() < mutation_rate:
-            self._inversion_Mutation(solution)
+            solution = self._gausian_Mutation(solution)
             solution = self._remove_empty_containers(solution)
         return solution
 
     # Funções para as Mutações
+
     def _swap_Mutation(self, solution):
         """
         Realiza a mutação de troca entre dois elementos de contêineres diferentes.
-
-        Args:
-            solution (list): Lista de contêineres representando a solução atual.
-
-        Returns:
-            list: Solução mutada com dois elementos trocados entre contêineres.
         """
-        # Cria uma cópia profunda da solução para evitar modificações in-place
-        mutated_solution = [container.copy() for container in solution]
+        # Evitar modificar a solução original
+        mutated_solution = solution.copy()
 
-        # Filtra os contêineres que possuem pelo menos um elemento
-        eligible_containers = [c for c in mutated_solution if c.elements]
-        if len(eligible_containers) < 2:
-            # Não há contêineres suficientes para realizar uma troca
+        # Filtra os índices dos contêineres que possuem pelo menos um elemento
+        eligible_indices = [i for i, c in enumerate(
+            mutated_solution) if c.elements]
+        if len(eligible_indices) < 2:
             return mutated_solution
 
-        # Seleciona aleatoriamente dois contêineres distintos
-        container1, container2 = random.sample(eligible_containers, 2)
+        # Seleciona aleatoriamente dois índices de contêineres distintos
+        idx1, idx2 = random.sample(eligible_indices, 2)
+        container1 = mutated_solution[idx1]
+        container2 = mutated_solution[idx2]
 
         # Seleciona um elemento aleatório de cada contêiner
         element1 = random.choice(container1.elements)
         element2 = random.choice(container2.elements)
 
         # Verifica se a troca é viável para ambos os contêineres
-        can_swap = (
-            container1.remaining_space() + element1 - element2 >= 0 and
-            container2.remaining_space() + element2 - element1 >= 0
-        )
+        if (container1.remaining_space() + element1 - element2 >= 0 and
+                container2.remaining_space() + element2 - element1 >= 0):
 
-        if can_swap:
+            # Fazer cópias dos contêineres para evitar modificar os originais
+            container1 = container1.copy()
+            container2 = container2.copy()
+            mutated_solution[idx1] = container1
+            mutated_solution[idx2] = container2
+
             # Realiza a troca de elementos entre os contêineres
             container1.remove_element(element1)
             container2.remove_element(element2)
             container1.add_element(element2)
             container2.add_element(element1)
-            # Atualiza o espaço utilizado nos contêineres
-            container1.used = sum(container1.elements)
-            container2.used = sum(container2.elements)
 
         return mutated_solution
 
     def _inversion_Mutation(self, solution):
         """
         Realiza a mutação de inversão em uma solução.
-
-        Args:
-            solution (list): Lista de contêineres representando a solução atual.
-
-        Returns:
-            list: Solução mutada com uma subsequência de itens invertida em um contêiner.
         """
-        # Cria uma cópia superficial dos contêineres com cópias internas
-        mutated_solution = [container.copy() for container in solution]
+        # Evitar modificar a solução original
+        mutated_solution = solution.copy()
 
-        # Filtra contêineres que possuem pelo menos dois itens
-        eligible_containers = [
-            c for c in mutated_solution if len(c.elements) >= 2]
-        if not eligible_containers:
-            # Não há contêineres elegíveis para mutação de inversão
+        # Filtra índices de contêineres que possuem pelo menos dois itens
+        eligible_indices = [i for i, c in enumerate(
+            mutated_solution) if len(c.elements) >= 2]
+        if not eligible_indices:
             return mutated_solution
 
-        # Seleciona aleatoriamente um contêiner elegível
-        container = random.choice(eligible_containers)
+        # Seleciona aleatoriamente um índice de contêiner elegível
+        idx = random.choice(eligible_indices)
+        container = mutated_solution[idx]
+
+        # Fazer uma cópia do contêiner para evitar modificar o original
+        container = container.copy()
+        mutated_solution[idx] = container
 
         # Seleciona dois índices para definir a subsequência a ser invertida
         idx1, idx2 = sorted(random.sample(range(len(container.elements)), 2))
 
         # Inverte a subsequência de itens entre idx1 e idx2
-        container.elements[idx1:idx2] = container.elements[idx1:idx2][::-1]
-
-        # Atualiza o espaço usado no contêiner
-        container.used = sum(container.elements)
+        container.elements[idx1:idx2] = reversed(container.elements[idx1:idx2])
 
         return mutated_solution
 
     def _insertion_Mutation(self, solution):
         """
-        Perform an insertion mutation on the given solution.
-
-        This method creates a deep copy of the provided solution to avoid in-place modifications.
-        It randomly selects two different containers from the solution. If the first container
-        has elements, it randomly selects an element from it, removes the element, and attempts
-        to insert it into the second container. If the second container does not have enough space
-        for the element, a new container is created and the element is added to it.
-
-        Args:
-            solution (list): A list of containers representing the current solution.
-
-        Returns:
-            list: A new list of containers representing the mutated solution.
+        Realiza uma mutação de inserção na solução.
         """
-        # Cria uma cópia profunda da solução para evitar modificações in-place
-        mutated_solution = [container.copy() for container in solution]
+        mutated_solution = solution.copy()
 
-        # Seleciona aleatoriamente dois contêineres diferentes
-        container1, container2 = random.sample(mutated_solution, 2)
+        if len(mutated_solution) < 2:
+            return mutated_solution
+
+        # Seleciona aleatoriamente dois índices de contêineres diferentes
+        idx1, idx2 = random.sample(range(len(mutated_solution)), 2)
+        container1 = mutated_solution[idx1]
+        container2 = mutated_solution[idx2]
 
         if container1.elements:
+            # Fazer cópias dos contêineres
+            container1 = container1.copy()
+            container2 = container2.copy()
+            mutated_solution[idx1] = container1
+            mutated_solution[idx2] = container2
+
             # Seleciona um item aleatório do container1
             element = random.choice(container1.elements)
             container1.remove_element(element)
 
-            # Se possível, tenta inserir o item em container2
+            # Tenta inserir o item em container2
             if container2.remaining_space() >= element:
                 container2.add_element(element)
             else:
-                # Se container2 não tiver espaço, crie um novo contêiner
+                # Se container2 não tiver espaço, cria um novo contêiner
                 new_container = Container(self.container_capacity)
-                new_container.add_element(element)
-                mutated_solution.append(new_container)
+                if new_container.remaining_space() >= element:
+                    new_container.add_element(element)
+                    mutated_solution.append(new_container)
+                else:
+                    # Se o item não couber, devolve o item ao container1
+                    container1.add_element(element)
 
         return mutated_solution
 
     def _scramble_Mutation(self, solution):
         """
-        Perform a scramble mutation on a given solution.
-
-        This mutation selects a random container with at least two elements,
-        chooses a subsequence within that container, and shuffles the elements
-        in that subsequence.
-
-        Args:
-            solution (list): A list of containers, where each container is an
-                             object with an 'elements' attribute (a list of elements)
-                             and a 'used' attribute (an integer representing the used space).
-
-        Returns:
-            list: A new solution with the mutated container.
+        Realiza uma mutação de embaralhamento em um contêiner.
         """
-        mutated_solution = [container.copy() for container in solution]
+        mutated_solution = solution.copy()
 
-        # Filtra os contêineres com pelo menos dois elementos
-        eligible_containers = [
-            c for c in mutated_solution if len(c.elements) > 1]
-        if not eligible_containers:
+        # Filtra índices de contêineres com pelo menos dois elementos
+        eligible_indices = [i for i, c in enumerate(
+            mutated_solution) if len(c.elements) > 1]
+        if not eligible_indices:
             return mutated_solution
 
-        # Seleciona um contêiner aleatório
-        container = random.choice(eligible_containers)
+        # Seleciona um índice de contêiner aleatório
+        idx = random.choice(eligible_indices)
+        container = mutated_solution[idx]
+
+        # Fazer uma cópia do contêiner
+        container = container.copy()
+        mutated_solution[idx] = container
 
         # Seleciona dois índices e embaralha os elementos nessa subsequência
         idx1, idx2 = sorted(random.sample(range(len(container.elements)), 2))
@@ -388,80 +393,101 @@ class GGA:
         random.shuffle(subsequence)
         container.elements[idx1:idx2] = subsequence
 
-        # Atualiza o espaço usado no contêiner
-        container.used = sum(container.elements)
-
         return mutated_solution
 
     def _gausian_Mutation(self, solution):
         """
-        Applies a Gaussian mutation to a given solution.
-
-        This method selects a random container and a random item within that container,
-        then applies a Gaussian mutation to the item's weight, simulating small variations.
-        The mutated weight is checked to ensure it fits within the container's remaining space.
-
-        Parameters:
-        solution (list): A list of containers, where each container has a list of elements (weights).
-
-        Returns:
-        list: A new solution with the mutated item weight.
+        Realiza uma mutação baseada em distribuição gaussiana sem alterar os pesos dos itens.
         """
-        mutated_solution = [container.copy() for container in solution]
+        mutated_solution = solution.copy()
 
-        # Seleciona aleatoriamente um contêiner e um item dentro desse contêiner
-        eligible_containers = [c for c in mutated_solution if c.elements]
-        if not eligible_containers:
+        num_containers = len(mutated_solution)
+        if num_containers < 2:
             return mutated_solution
 
-        container = random.choice(eligible_containers)
-        element_idx = random.randint(0, len(container.elements) - 1)
+        # Seleciona um índice de contêiner com base em uma distribuição gaussiana
+        mean = num_containers / 2
+        std_dev = num_containers / 4
+        max_attempts = 10
+        attempts = 0
+        while attempts < max_attempts:
+            index_from = int(np.random.normal(mean, std_dev))
+            if 0 <= index_from < num_containers and mutated_solution[index_from].elements:
+                break
+            attempts += 1
+        else:
+            return mutated_solution
 
-        # Aplica uma mutação gaussiana ao item (simulando pequenas variações no peso)
-        original_weight = container.elements[element_idx]
-        mutated_weight = abs(np.random.normal(
-            loc=original_weight, scale=original_weight * 0.1))  # Variação de 10%
+        # Fazer cópias dos contêineres
+        container_from = mutated_solution[index_from].copy()
+        mutated_solution[index_from] = container_from
 
-        # Verifica se o novo peso cabe no contêiner
-        if container.remaining_space() + container.elements[element_idx] >= mutated_weight:
-            container.elements[element_idx] = mutated_weight
-            # Atualiza o espaço utilizado
-            container.used = sum(container.elements)
+        index_to = random.choice(
+            [i for i in range(num_containers) if i != index_from])
+        container_to = mutated_solution[index_to].copy()
+        mutated_solution[index_to] = container_to
+
+        # Seleciona um item aleatório do contêiner de origem
+        item = random.choice(container_from.elements)
+
+        # Verifica se o item cabe no contêiner de destino
+        if container_to.remaining_space() >= item:
+            container_from.remove_element(item)
+            container_to.add_element(item)
+        else:
+            # Tenta criar um novo contêiner
+            new_container = Container(self.container_capacity)
+            if new_container.remaining_space() >= item:
+                container_from.remove_element(item)
+                new_container.add_element(item)
+                mutated_solution.append(new_container)
+            else:
+                # Não foi possível mover o item
+                mutated_solution[index_from] = solution[index_from]
+                mutated_solution[index_to] = solution[index_to]
+
+        # Remove contêineres vazios
+        mutated_solution = self._remove_empty_containers(mutated_solution)
 
         return mutated_solution
 
     def _bitflip_Mutation(self, solution):
         """
-        Perform a bit-flip mutation on the given solution.
-
-        This mutation selects two different containers from the solution and attempts to move a random element
-        from the first container to the second container. If the second container does not have enough space
-        for the element, a new container is created and the element is added to it.
-
-        Args:
-            solution (list): A list of containers representing the current solution.
-
-        Returns:
-            list: A new solution with the mutation applied.
+        Realiza uma mutação de bit-flip na solução.
         """
-        mutated_solution = [container.copy() for container in solution]
+        mutated_solution = solution.copy()
 
-        # Seleciona aleatoriamente dois contêineres diferentes
-        container1, container2 = random.sample(mutated_solution, 2)
+        if len(mutated_solution) < 2:
+            return mutated_solution
+
+        # Seleciona aleatoriamente dois índices de contêineres diferentes
+        idx1, idx2 = random.sample(range(len(mutated_solution)), 2)
+        container1 = mutated_solution[idx1]
+        container2 = mutated_solution[idx2]
 
         if container1.elements:
+            # Fazer cópias dos contêineres
+            container1 = container1.copy()
+            container2 = container2.copy()
+            mutated_solution[idx1] = container1
+            mutated_solution[idx2] = container2
+
             # Seleciona um item aleatório do container1
             element = random.choice(container1.elements)
             container1.remove_element(element)
 
-            # Se possível, tenta inserir o item em container2
+            # Tenta inserir o item em container2
             if container2.remaining_space() >= element:
                 container2.add_element(element)
             else:
-                # Se container2 não tiver espaço, crie um novo contêiner
+                # Se container2 não tiver espaço, cria um novo contêiner
                 new_container = Container(self.container_capacity)
-                new_container.add_element(element)
-                mutated_solution.append(new_container)
+                if new_container.remaining_space() >= element:
+                    new_container.add_element(element)
+                    mutated_solution.append(new_container)
+                else:
+                    # Se o item não couber, devolve o item ao container1
+                    container1.add_element(element)
 
         return mutated_solution
 
@@ -481,15 +507,15 @@ class GGA:
     # Função principal que executa o algoritmo genético
     def run(self):
         self.initialize_population()
-        best_fitness = -float('inf')
+        best_fitness = float('inf')
         stagnation_counter = 0
 
         for generation in range(self.num_generations):
             fitnesses = [self.fitness(individual)
                          for individual in self.population]
-            current_best_fitness = max(fitnesses)
+            current_best_fitness = min(fitnesses)
 
-            if current_best_fitness > best_fitness:
+            if current_best_fitness < best_fitness:
                 best_fitness = current_best_fitness
                 stagnation_counter = 0
             else:
@@ -497,12 +523,14 @@ class GGA:
 
             if stagnation_counter >= self.stagnation_limit:
                 print(
-                    f"Estagnação atingida na geração {generation}. Finalizando o algoritmo...")
+                    f"Estagnação atingida na geração {
+                        generation}. Finalizando o algoritmo..."
+                )
                 break
 
             self.population = self.create_new_population(fitnesses)
 
-        best_solution = max(self.population, key=self.fitness)
+        best_solution = min(self.population, key=self.fitness)
         print(f"Melhor fitness obtido: {best_fitness}")
         return best_solution
 
@@ -525,12 +553,13 @@ class GGA:
         new_population = improved_elite.copy()
 
         while len(new_population) < self.population_size:
-            parent1 = self.roulette_wheel_selection(
+            parent1 = self.stoic_tournament_selection(
                 self.population, fitnesses)
-            parent2 = self.roulette_wheel_selection(
+            parent2 = self.stoic_tournament_selection(
                 self.population, fitnesses)
 
-            child1, child2 = self.multi_point_crossover(parent1, parent2)
+            # multi_point_crossover
+            child1, child2 = self.pmx_crossover(parent1, parent2)
             child1 = self.mutate(child1, self.mutation_rate)
             child2 = self.mutate(child2, self.mutation_rate)
 
@@ -562,8 +591,7 @@ class GGA:
 # def call_optuna(self):
 
 
-"""
-def objective(trial):
+"""def objective(trial):
     # Hiperparâmetros a serem otimizados
     hyperparameters = {
         'num_generations': trial.suggest_int('num_generations', 50, 200),
@@ -589,9 +617,10 @@ def objective(trial):
 
 # Alterar para "maximize" se necessário
 study = optuna.create_study(direction="minimize")
-study.optimize(objective, n_trials=20)
+study.optimize(objective, n_trials=50)
 
 # Exibir os melhores hiperparâmetros
 print("Melhores hiperparâmetros encontrados:", study.best_params)
 # return study.best_params
+
 """

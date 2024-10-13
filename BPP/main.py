@@ -36,9 +36,14 @@ def process_instance(Arquivo):
 def main():
     # Lista de arquivos a serem processados
     # Adicione mais arquivos conforme necessário
-    arquivos = ["E_120_N_40_60/E_120_N_40_60_BF0000.bpp",
-                "E_250_N_40_60/E_250_N_40_60_BF0000.bpp"
-                ]
+    arquivos = [
+        "Scholl/Scholl_2/N4W1B1R0.txt",
+        "Scholl/Scholl_2/N4W1B1R1.txt",
+        "Scholl/Scholl_2/N4W1B1R2.txt",
+        "Scholl/Scholl_2/N4W1B1R3.txt",
+        "Scholl/Scholl_2/N4W1B1R4.txt",
+        "Scholl/Scholl_2/N4W1B1R5.txt"
+    ]
 
     with ProcessPoolExecutor() as executor:
         futures = [executor.submit(process_instance, arquivo)

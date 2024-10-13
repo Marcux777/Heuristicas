@@ -25,7 +25,7 @@ def create_data(Arquivo):
 
 
 def main():
-    data = create_data("E_250_N_40_60/E_250_N_40_60_BF0000.bpp")
+    data = create_data("BPP_100_100_0.1_0.8_7.txt")
 
     # Create the mip solver with the SCIP backend.
     solver = pywraplp.Solver.CreateSolver("SCIP")
