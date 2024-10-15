@@ -599,7 +599,8 @@ Para os testes dos algoritmos implementados, juntamente dos operadores, foram us
 ### 3.3.1. Configuração da Maquina que foi testada a implementação
 
 Processador: Intel(R) Core(TM) i5-1035G1 CPU @ 1.00GHz 1.19 GHz
-Memoria Ram: 8,00 GB (utilizável: 7,77 GB)
+
+Memória Ram: 8,00 GB (utilizável: 7,77 GB)
 
 ### 3.3.2. Benchmark
 Para facilitar a visualização de cada operador, vamos mostrar os testes apenas para a instância N1W1B1R5 fornecida por _Scholl at al._
