@@ -291,7 +291,7 @@ class GGA:
     # Função de mutação
     def mutate(self, solution, mutation_rate):
         if random.random() < mutation_rate:
-            solution = self._insertion_Mutation(solution)
+            solution = self._bitflip_Mutation(solution)
             solution = self._remove_empty_containers(solution)
         return solution
 
@@ -492,7 +492,18 @@ class GGA:
 
     def _bitflip_Mutation(self, solution):
         """
-        Realiza uma mutação de bit-flip na solução.
+        Realiza uma mutação de bit-flip na solução fornecida.
+
+        Esta mutação seleciona aleatoriamente dois contêineres diferentes da solução.
+        Se o primeiro contêiner selecionado tiver elementos, ele seleciona aleatoriamente
+        um elemento deste contêiner e tenta movê-lo para o segundo contêiner selecionado.
+        Se o segundo contêiner não tiver espaço suficiente, um novo contêiner é criado
+        para acomodar o elemento. Se o elemento não puder ser movido, ele é devolvido ao
+        contêiner original.
+
+            solution (list): Uma lista de contêineres representando a solução atual.
+
+            list: Uma nova solução com a mutação de bit-flip aplicada.
         """
         mutated_solution = solution.copy()
 
@@ -537,6 +548,15 @@ class GGA:
 
     # Função auxiliar para redistribuir os elementos em contêineres
     def pack_elements(self, elements):
+        """
+        Empacota os elementos fornecidos em contêineres usando um método de geração de solução inicial.
+
+        Args:
+            elements (list): Uma lista de elementos a serem empacotados em contêineres.
+
+        Returns:
+            list: Uma lista de contêineres com os elementos empacotados.
+        """
         original_elements = self.elements
         self.elements = elements
         containers = self.generate_initial_solution()
@@ -545,6 +565,18 @@ class GGA:
 
     # Função principal que executa o algoritmo genético
     def run(self):
+        """
+        Executa o algoritmo genético para otimização.
+
+        Inicializa a população e itera por um número definido de gerações,
+        avaliando a aptidão (fitness) de cada indivíduo e criando novas populações
+        até que a estagnação seja atingida ou o número máximo de gerações seja alcançado.
+
+        Retorna a melhor solução encontrada.
+
+        Returns:
+            best_solution: O indivíduo com a melhor aptidão encontrado durante a execução do algoritmo.
+        """
         self.initialize_population()
         best_fitness = float('inf')
         stagnation_counter = 0
@@ -574,10 +606,34 @@ class GGA:
         return best_solution
 
     def initialize_population(self):
+        """
+        Inicializa a população para o algoritmo genético.
+
+        Este método gera uma população inicial de soluções chamando
+        o método `generate_initial_solution` para cada indivíduo na
+        população. O tamanho da população é determinado pelo atributo
+        `population_size`.
+
+        Retorna:
+            None
+        """
         self.population = [self.generate_initial_solution()
                            for _ in range(self.population_size)]
 
     def create_new_population(self, fitnesses):
+        """
+        Gera uma nova população para o algoritmo genético.
+
+        Este método aplica elitismo para reter os indivíduos de melhor desempenho,
+        melhora-os usando a Busca Tabu e preenche o restante da população
+        usando operações de cruzamento e mutação.
+
+        Args:
+            fitnesses (list): Uma lista de valores de fitness correspondentes à população atual.
+
+        Returns:
+            list: Uma nova população de indivíduos.
+        """
         # aplicação do elitismo
         elite_size = int(self.elite_rating * self.population_size)
         elite = sorted(self.population, key=self.fitness)[:elite_size]
@@ -598,7 +654,7 @@ class GGA:
                 self.population, fitnesses)
 
             # multi_point_crossover
-            child1, child2 = self.pmx_crossover(parent1, parent2)
+            child1, child2 = self.multi_point_crossover(parent1, parent2)
             child1 = self.mutate(child1, self.mutation_rate)
             child2 = self.mutate(child2, self.mutation_rate)
 

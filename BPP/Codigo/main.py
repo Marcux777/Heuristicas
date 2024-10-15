@@ -41,6 +41,7 @@ def main():
     ]
 
     with ProcessPoolExecutor() as executor:
+        
         futures = [executor.submit(process_instance, arquivo)
                    for arquivo in arquivos]
 

@@ -4,6 +4,15 @@ from collections import deque
 
 class Tabu_Search:
     def __init__(self, gga, max_iterations=100, tabu_tenure=5, max_neighbors=100):
+        """
+        Inicializa o algoritmo de Busca Tabu com os parâmetros fornecidos.
+
+        Args:
+            gga (object): O objeto do algoritmo genético a ser utilizado.
+            max_iterations (int, opcional): O número máximo de iterações para a Busca Tabu. Padrão é 100.
+            tabu_tenure (int, opcional): O número de iterações que um movimento permanece na lista tabu. Padrão é 5.
+            max_neighbors (int, opcional): O número máximo de vizinhos a considerar em cada iteração. Padrão é 100.
+        """
         self.gga = gga
         self.max_iterations = max_iterations
         self.tabu_tenure = tabu_tenure
@@ -12,6 +21,20 @@ class Tabu_Search:
         self.tabu_set = set()
 
     def search(self, solution):
+        """
+        Realiza uma Busca Tabu para encontrar a melhor solução.
+
+        Args:
+            solution (list): A solução inicial para começar a busca.
+
+        Returns:
+            list: A melhor solução encontrada durante a busca.
+
+        A função explora iterativamente a vizinhança da solução atual,
+        atualizando a melhor solução encontrada e mantendo uma lista tabu para evitar ciclos.
+        A busca para quando o número máximo de iterações é alcançado ou nenhum
+        vizinho aceitável é encontrado.
+        """
         current_solution = solution
         best_solution = solution
         best_fitness = self.gga.fitness(solution)
@@ -44,6 +67,20 @@ class Tabu_Search:
         return best_solution
 
     def generate_neighborhood(self, solution):
+        """
+        Gera uma vizinhança de soluções movendo elementos entre contêineres.
+
+        Args:
+            solution (list): A solução atual representada como uma lista de contêineres.
+
+        Returns:
+            list: Uma lista de tuplas, cada uma contendo uma nova solução, o movimento realizado e a aptidão da nova solução.
+
+        A função tenta gerar um número especificado de soluções vizinhas selecionando aleatoriamente dois contêineres
+        e movendo um elemento de um contêiner para outro, se houver espaço suficiente. Ela garante que o número de vizinhos
+        não exceda `self.max_neighbors` e evita loops infinitos limitando o número de tentativas. Cada nova solução
+        é avaliada quanto à sua aptidão, e contêineres vazios são removidos antes de adicionar a solução à lista de vizinhos.
+        """
         neighbors = []
         n = len(solution)
         attempts = 0
