@@ -567,7 +567,7 @@ Para gerar uma solução inicial, aplicamos a heurística Best-Fit Decreasing (B
 
 Para fins de comparação, utilizamos a biblioteca `OR-Tools` da Google nas mesmas instâncias de teste. (Documentação oficial da OR-Tools ([Google Optimization Tools](https://developers.google.com/optimization))).
 
-![alt text](image.png)
+![alt text](/BPP/Imagens/image.png)
 
 Para a primeira entrada, obtivemos 45 contêineres utilizados, em comparação com os 41 contêineres obtidos pelo algoritmo do `OR-Tools`. Isso demonstrou a eficácia inicial do GGA, embora tenha evidenciado áreas onde há potencial para melhorias adicionais.
 
@@ -575,11 +575,11 @@ A fim de aprimorar os resultados, incorporamos o algoritmo `Tabu Search`, que fo
 
 Em seguida, exploramos diferentes combinações de operadores para melhorar a performance do algoritmo. Introduzimos métodos de seleção como o Roulette Wheel Selection e o Stoic Tournament Selection, assim como o operador de cruzamento Multi-Point Crossover. Também realizamos paralelização na CPU para acelerar o processo de busca. Essas modificações resultaram em soluções de maior qualidade, embora com um custo computacional ligeiramente superior, como vemos a baixo.
 
-![alt text](image-1.png)
+![alt text](/BPP/Imagens/image-1.png)
 
 Posteriormente, implementamos a mutação de inversão (Inversion Mutation) e utilizamos técnicas de otimização de hiperparâmetros para identificar as configurações mais adequadas para os operadores do algoritmo. Isso nos permitiu obter resultados quase ótimos e, em alguns casos, atingir o valor ótimo para instâncias específicas.
 
-![alt text](image-2.png)
+![alt text](/BPP/Imagens/image-2.png)
 
 ### 3.2.1 Aprimoramento
 
