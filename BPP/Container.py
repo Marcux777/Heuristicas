@@ -1,9 +1,17 @@
+from copy import deepcopy
+
 
 class Container:
     def __init__(self, capacity):
         self.elements = []  # Lista de elementos (tamanhos) dentro do container
         self.capacity = capacity
         self.used = 0  # Espaço já utilizado no container
+
+    def __deepcopy__(self, memo):
+        new_container = Container(self.capacity)
+        new_container.elements = deepcopy(self.elements, memo)
+        # Copiar outros atributos, se houver
+        return new_container
 
     def add_element(self, element):
         if self.used + element <= self.capacity:

@@ -37,12 +37,7 @@ def main():
     # Lista de arquivos a serem processados
     # Adicione mais arquivos conforme necessário
     arquivos = [
-        "Scholl/Scholl_2/N4W1B1R0.txt",
-        "Scholl/Scholl_2/N4W1B1R1.txt",
-        "Scholl/Scholl_2/N4W1B1R2.txt",
-        "Scholl/Scholl_2/N4W1B1R3.txt",
-        "Scholl/Scholl_2/N4W1B1R4.txt",
-        "Scholl/Scholl_2/N4W1B1R5.txt"
+        "Scholl/Scholl_2/N1W1B1R5.txt",
     ]
 
     with ProcessPoolExecutor() as executor:

@@ -5,6 +5,7 @@ from Tabu_Search import Tabu_Search
 import optuna
 import numpy as np
 import bisect
+from collections import Counter
 
 
 class GGA:
@@ -29,22 +30,23 @@ class GGA:
         """
         self.elements = elements.get('weights', [])
         self.container_capacity = elements.get('bin_capacity', 0)
-        self.num_generations = elements.get('num_generations', 121)
-        self.population_size = elements.get('population_size', 69)
+        self.num_generations = elements.get('num_generations', 142)
+        self.population_size = elements.get('population_size', 23)
         self.stagnation_limit = elements.get('stagnation_limit', 50)
         self.tournament_size = elements.get('tournament_size', 3)
-        self.mutation_rate = elements.get('mutation_rate', 0.34)
-        self.elite_rating = elements.get('elite_rating', 0.16)
+        self.mutation_rate = elements.get('mutation_rate', 0.15)
+        self.elite_rating = elements.get('elite_rating', 0.37)
 
         # Parâmetros da Tabu Search
-        self.tabu_max_iterations = elements.get('tabu_max_iterations', 88)
-        self.tabu_tenure = elements.get('tabu_tenure', 17)
-        self.tabu_max_neighbors = elements.get('tabu_max_neighbors', 20)
+        self.tabu_max_iterations = elements.get('tabu_max_iterations', 32)
+        self.tabu_tenure = elements.get('tabu_tenure', 2)
+        self.tabu_max_neighbors = elements.get('tabu_max_neighbors', 38)
 
     def generate_initial_solution(self, elements=None):
         if elements is None:
             elements = self.elements
         # Ordenar em ordem decrescente
+        elements = [e for e in elements if e is not None]
         sorted_elements = sorted(elements, reverse=True)
         # Listas para armazenar os contêineres e seus espaços restantes
         containers = []
@@ -90,6 +92,7 @@ class GGA:
 # -------------------------------- Metodos de Seleção -------------------------------- #
 
     # Seleção por torneio
+
 
     def tournament_selection(self, population, fitnesses, tournament_size=3):
         selected = random.sample(
@@ -172,19 +175,55 @@ class GGA:
         elements2 = [
             element for container in parent2 for element in container.elements]
 
-        if len(elements1) < 2:
-            return parent1, parent2  # Não há pontos suficientes para cruzamento
+        # Verificar se ambos os pais têm os mesmos elementos (e contagens)
+        if sorted(elements1) != sorted(elements2):
+            raise ValueError("Os pais devem conter os mesmos elementos.")
 
-        # Escolhe dois pontos de cruzamento e garante que point1 seja menor que point2
-        point1, point2 = sorted(random.sample(range(1, len(elements1)), 2))
+        length = len(elements1)
+        if length < 2:
+            return parent1, parent2
 
-        # Constrói os filhos alternando as subseções entre os pais
-        child1_elements = elements1[:point1] + \
-            elements2[point1:point2] + elements1[point2:]
-        child2_elements = elements2[:point1] + \
-            elements1[point1:point2] + elements2[point2:]
+        # Escolher dois pontos de cruzamento
+        point1, point2 = sorted(random.sample(range(length), 2))
 
-        # Gera dois filhos redistribuindo os elementos entre os contêineres
+        # Iniciar filhos com None
+        child1_elements = [None] * length
+        child2_elements = [None] * length
+
+        # Copiar segmento intermediário dos pais para os filhos
+        child1_elements[point1:point2] = elements1[point1:point2]
+        child2_elements[point1:point2] = elements2[point1:point2]
+
+        # Utilizar Counters para rastrear a contagem de elementos
+        child1_counter = Counter(child1_elements[point1:point2])
+        child2_counter = Counter(child2_elements[point1:point2])
+
+        total_counter = Counter(elements1)  # Contagem total de elementos
+
+        # Função para preencher o filho considerando a contagem de elementos
+        def fill_child(child, other_parent, child_counter):
+            length = len(child)
+            current_pos = point2 % length
+            for element in other_parent:
+                total_count = total_counter[element]
+                current_count = child_counter.get(element, 0)
+                if current_count < total_count:
+                    # Encontrar a próxima posição vazia
+                    while child[current_pos] is not None:
+                        current_pos = (current_pos + 1) % length
+                    child[current_pos] = element
+                    child_counter[element] = current_count + 1
+                    current_pos = (current_pos + 1) % length
+
+        # Preencher os filhos utilizando a função corrigida
+        fill_child(child1_elements, elements2, child1_counter)
+        fill_child(child2_elements, elements1, child2_counter)
+
+        # Verificar se não há None nas listas dos filhos
+        assert None not in child1_elements, "child1_elements contém None após o preenchimento."
+        assert None not in child2_elements, "child2_elements contém None após o preenchimento."
+
+        # Gerar filhos redistribuindo os elementos entre os contêineres
         child1 = self.pack_elements(child1_elements)
         child2 = self.pack_elements(child2_elements)
 
@@ -252,7 +291,7 @@ class GGA:
     # Função de mutação
     def mutate(self, solution, mutation_rate):
         if random.random() < mutation_rate:
-            solution = self._gausian_Mutation(solution)
+            solution = self._insertion_Mutation(solution)
             solution = self._remove_empty_containers(solution)
         return solution
 
@@ -591,7 +630,8 @@ class GGA:
 # def call_optuna(self):
 
 
-"""def objective(trial):
+"""
+def objective(trial):
     # Hiperparâmetros a serem otimizados
     hyperparameters = {
         'num_generations': trial.suggest_int('num_generations', 50, 200),
@@ -622,5 +662,4 @@ study.optimize(objective, n_trials=50)
 # Exibir os melhores hiperparâmetros
 print("Melhores hiperparâmetros encontrados:", study.best_params)
 # return study.best_params
-
 """
