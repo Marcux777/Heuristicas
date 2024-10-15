@@ -10,13 +10,13 @@
 		- [1.3.4. Função Objetivo](#134-função-objetivo)
 	- [1.4. Abordagens de Solução](#14-abordagens-de-solução)
 		- [1.4.1. Técnicas de Melhoria](#141-técnicas-de-melhoria)
-		- [#1.4. Abordagens de Solução#1.4.2. O que é Meta-Heuristica?|1.4.2. O que é Meta-Heuristica?](#142-o-que-é-meta-heuristica)
+		- [1.4.2. O que é Meta-Heuristica?](#142-o-que-é-meta-heuristica)
 - [2. Algoritmo Genético de Agrupamento (GGA) e hibridização](#2-algoritmo-genético-de-agrupamento-gga-e-hibridização)
 	- [2.1. Motivação para o GGA](#21-motivação-para-o-gga)
 	- [2.2. Descrição do Algoritmo](#22-descrição-do-algoritmo)
-		- [2.2.1. Principais Características do GGA|2.2.1. Principais Características do GGA](#221-principais-características-do-gga)
-		- [2.2.2. Vantagens do GGA|2.2.2. Vantagens do GGA](#222-vantagens-do-gga)
-		- [2.2.3. Variações e Extensões|2.2.3. Variações e Extensões](#223-variações-e-extensões)
+		- [2.2.1. Principais Características do GGA](#221-principais-características-do-gga)
+		- [2.2.2. Vantagens do GGA](#222-vantagens-do-gga)
+		- [2.2.3. Variações e Extensões](#223-variações-e-extensões)
 		- [2.2.4. Pseudo-Algoritmo do Grouping Genetic Algorithm](#224-pseudo-algoritmo-do-grouping-genetic-algorithm)
 	- [2.3. Hibridização do GGA com Outras Heurísticas](#23-hibridização-do-gga-com-outras-heurísticas)
 		- [2.3.1. Vantagens do GGA como Base](#231-vantagens-do-gga-como-base)
@@ -46,7 +46,7 @@
 
 ---
 # 1. Introdução
-### 1.1. O problema de empacotamento em caixas unidimensional (1D-BPP)
+## 1.1. O problema de empacotamento em caixas unidimensional (1D-BPP)
 
 O problema de empacotamento em caixas unidimensional (1D-BPP) envolve empacotar um determinado conjunto de itens com pesos diferentes em um número mínimo de caixas, cada uma com uma capacidade fixa. O problema pode ser visto de duas maneiras:
 
@@ -566,15 +566,19 @@ A implementação inicial do GGA utilizou operadores clássicos do algoritmo, co
 Para gerar uma solução inicial, aplicamos a heurística Best-Fit Decreasing (BFD), que proporcionou soluções promissoras. Essa abordagem simples nos permitiu estabelecer uma base sólida para experimentação subsequente.
 
 Para fins de comparação, utilizamos a biblioteca `OR-Tools` da Google nas mesmas instâncias de teste. (Documentação oficial da OR-Tools ([Google Optimization Tools](https://developers.google.com/optimization))).
+
 ![alt text](image.png)
+
 Para a primeira entrada, obtivemos 45 contêineres utilizados, em comparação com os 41 contêineres obtidos pelo algoritmo do `OR-Tools`. Isso demonstrou a eficácia inicial do GGA, embora tenha evidenciado áreas onde há potencial para melhorias adicionais.
 
 A fim de aprimorar os resultados, incorporamos o algoritmo `Tabu Search`, que foi empregado para refinar as soluções parciais geradas pelo GGA. Cada indivíduo gerado passava por um processo de melhoria utilizando `Tabu Search`, permitindo uma busca local mais intensiva e direcionada em regiões promissoras do espaço de soluções.
 
 Em seguida, exploramos diferentes combinações de operadores para melhorar a performance do algoritmo. Introduzimos métodos de seleção como o Roulette Wheel Selection e o Stoic Tournament Selection, assim como o operador de cruzamento Multi-Point Crossover. Também realizamos paralelização na CPU para acelerar o processo de busca. Essas modificações resultaram em soluções de maior qualidade, embora com um custo computacional ligeiramente superior, como vemos a baixo.
+
 ![alt text](image-1.png)
 
 Posteriormente, implementamos a mutação de inversão (Inversion Mutation) e utilizamos técnicas de otimização de hiperparâmetros para identificar as configurações mais adequadas para os operadores do algoritmo. Isso nos permitiu obter resultados quase ótimos e, em alguns casos, atingir o valor ótimo para instâncias específicas.
+
 ![alt text](image-2.png)
 
 ### 3.2.1 Aprimoramento
