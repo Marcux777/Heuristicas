@@ -1,6 +1,6 @@
 # Relatorio
-- [Relatorio](/BPP/Relatorio/Relatorio.md) -> Arquivo .md, melhor para ler no github
-- [Relatorio] -> O PDF do relatorio
+- [Relatorio](/BPP/Relatorio/Relatorio.md) -> Arquivo .md, melhor para ler, visto que o relatiorio foi feito usando linguagem de marcação markdown, propria pro github.
+- [Relatorio](/BPP/Relatorio/Relatorio.pdf) -> O PDF do relatorio. 
 
 # Implementação
 
