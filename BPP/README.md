@@ -2,6 +2,12 @@
 - [Relatorio](/BPP/Relatorio/Relatorio.md) -> Arquivo .md, melhor para ler, visto que o relatorio foi feito usando linguagem de marcação markdown, propria pro github.
 - [Relatorio](/BPP/Relatorio/Relatorio.pdf) -> O mesmo arquivo, porém em PDF.
 
+# Requisitos
+
+- python 3.12.6
+- numpy 2.1.1
+
+
 # Implementação
 
 ## Codigos
