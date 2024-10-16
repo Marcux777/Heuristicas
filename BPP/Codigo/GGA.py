@@ -2,7 +2,7 @@ import random
 from copy import deepcopy
 from Container import Container
 from Tabu_Search import Tabu_Search
-import optuna
+#import optuna
 import numpy as np
 import bisect
 from collections import Counter

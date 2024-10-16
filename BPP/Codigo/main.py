@@ -37,11 +37,11 @@ def main():
     # Lista de arquivos a serem processados
     # Adicione mais arquivos conforme necessário
     arquivos = [
-        "Scholl/Scholl_2/N1W1B1R5.txt",
+        "teste.txt",
     ]
 
     with ProcessPoolExecutor() as executor:
-        
+
         futures = [executor.submit(process_instance, arquivo)
                    for arquivo in arquivos]
 
