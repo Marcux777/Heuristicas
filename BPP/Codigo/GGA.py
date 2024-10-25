@@ -594,8 +594,7 @@ class GGA:
 
             if stagnation_counter >= self.stagnation_limit:
                 print(
-                    f"Estagnação atingida na geração {
-                        generation}. Finalizando o algoritmo..."
+                    f"Estagnação atingida na geração {generation}. Finalizando o algoritmo..."
                 )
                 break
 
