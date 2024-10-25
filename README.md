@@ -4,7 +4,7 @@ Codigo de MetaHeuristicas e implementação de problemas clássicos com elas
 
 https://www.math.uwaterloo.ca/tsp/data/index.html
 
-# MetaHeuristicas Explicadas
+# MetaHeuristicas
 
 1. [x] [Ant Colony Optimization - ACO](/Ant%20Colony%20Optimization.md)
 2. [ ] [Particle Swarm Optimization - PSO](/Particle%20Swarm%20Optimization.md)
