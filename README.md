@@ -1,5 +1,3 @@
-Codigo de MetaHeuristicas e implementação de problemas clássicos com elas
-
 ## Dados TSP - UWaterLoo
 
 https://www.math.uwaterloo.ca/tsp/data/index.html
