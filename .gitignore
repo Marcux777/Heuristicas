@@ -1,1 +1,3 @@
 *.bpp
+BPPInstances/*
+*.txt
